@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
@@ -12,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_home.*
 
 class MainActivity : AppCompatActivity() {
-
+     var handle:Handler?=null
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -35,7 +36,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         supportFragmentManager.inTransaction { add(R.id.activity_fragment,HomeFragment.newInstance()) }
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-
     }
 
     inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit) {

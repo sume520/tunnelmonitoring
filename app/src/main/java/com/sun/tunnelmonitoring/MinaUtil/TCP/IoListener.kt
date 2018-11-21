@@ -1,4 +1,4 @@
-package com.sun.tunnelmonitoring.MinaUtil
+package com.sun.tunnelmonitoring.MinaUtil.TCP
 
 import org.apache.mina.core.service.IoService
 import org.apache.mina.core.service.IoServiceListener

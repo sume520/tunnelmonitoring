@@ -1,27 +1,23 @@
 package com.sun.tunnelmonitoring
 
 
-import android.content.Context
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.text.Editable
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
-import com.sun.tunnelmonitoring.MinaUtil.MinaTCPClientThread
-import com.sun.tunnelmonitoring.MinaUtil.MinaTCPServerThread
+import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPClientThread
+import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPServerThread
 import com.sun.tunnelmonitoring.MinaUtil.SessionManager
+import com.sun.tunnelmonitoring.MinaUtil.UDP.MinaUDPClientThread
+import com.sun.tunnelmonitoring.MinaUtil.UDP.MinaUDPServerThread
 import com.threshold.logger.PrettyLogger
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.net.InetAddress
 
 class HomeFragment : Fragment(), PrettyLogger {
     private lateinit var textview:TextView
@@ -60,7 +56,7 @@ class HomeFragment : Fragment(), PrettyLogger {
                 }
                 R.id.udpserver-> {
                     et_sendtext.isClickable=false
-                    //MinaTCPClientThread.connect()
+                    MinaUDPServerThread.startUDPServer()
                 }
                 R.id.tcpclient-> {
                     //setAPAddr()
@@ -69,12 +65,18 @@ class HomeFragment : Fragment(), PrettyLogger {
                 }
                 R.id.udpclient-> {
                     et_sendtext.isClickable=true
+                    MinaUDPClientThread.connect()
                 }
             }
         }
 
         send.setOnClickListener {
-            SessionManager.writeMsg(et_sendtext.text.toString())
+            var text=et_sendtext.text.toString()
+            var buffer=SessionManager.StringToIoBuffer(text)
+            if (buffer != null && udpclient.isChecked) {
+                SessionManager.write(buffer)
+            }else
+                SessionManager.write(text)
             et_sendtext.text.clear()
         }
     }

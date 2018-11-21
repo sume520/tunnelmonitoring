@@ -1,4 +1,4 @@
-package com.sun.tunnelmonitoring.MinaUtil
+package com.sun.tunnelmonitoring.MinaUtil.TCP
 
 import android.os.Handler
 import android.util.Log
@@ -45,7 +45,7 @@ object MinaTCPServerThread:Runnable {
             // 读写通道10秒内无操作进入空闲状态
             acceptor.sessionConfig.setIdleTime(IdleStatus.BOTH_IDLE, 10)
             // 为接收器设置管理服务
-            acceptor.handler = MinaServerHandler()
+            acceptor.handler = MinaTCPServerHandler()
             // 绑定端口
             acceptor.bind(InetSocketAddress(PORT))
             Log.d("MinaTcpServerThread","服务器启动成功... 端口号未：$PORT")
