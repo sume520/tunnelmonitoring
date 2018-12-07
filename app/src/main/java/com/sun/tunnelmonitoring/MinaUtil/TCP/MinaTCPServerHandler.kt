@@ -25,6 +25,7 @@ class MinaTCPServerHandler:IoHandlerAdapter() {
 
     override fun sessionClosed(session: IoSession?) {
         super.sessionClosed(session)
+        Log.d("MinaTCPServerHandler","关闭连接")
     }
 
     override fun messageSent(session: IoSession?, message: Any?) {
@@ -47,5 +48,6 @@ class MinaTCPServerHandler:IoHandlerAdapter() {
     override fun exceptionCaught(session: IoSession?, cause: Throwable?) {
         super.exceptionCaught(session, cause)
         session!!.closeNow()
+        Log.d("MinaTCPServerHandler","发生异常")
     }
 }

@@ -11,9 +11,11 @@ object SessionManager {
     var session: IoSession? = null//session将在MinaThread中赋值
 
     fun write(msg:Any){
-        if(session!=null && session!!.isConnected){
+        if(session!=null && session!!.isConnected && msg!=null){
             try{
-                session!!.write(msg)
+                Thread {
+                    session!!.write(msg)
+                }.start()
                 Log.d("write","发送数据成功")
             }catch (e:IOException){
                 Log.d("write","发送数据异常")
@@ -58,6 +60,11 @@ object SessionManager {
         buffer.putString(str,Charset.forName("UTF-8").newEncoder())
         buffer.flip()
         return buffer
+    }
+
+    fun close(){
+        if(session!=null)
+            session!!.closeNow()
     }
 
 }

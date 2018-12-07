@@ -17,13 +17,13 @@ import java.nio.charset.Charset
 object MinaTCPServerThread:Runnable {
     private var handler=Handler()
     private val PORT=3344
+    private lateinit var acceptor: IoAcceptor
 
     fun startTCPServer(){
         Thread(this).start()
     }
 
     override fun run() {
-        var acceptor: IoAcceptor? = null
         try {
             // 创建一个非阻塞的server端的Socket
             acceptor = NioSocketAcceptor()

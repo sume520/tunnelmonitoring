@@ -6,6 +6,7 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.sun.tunnelmonitoring.MinaUtil.SessionManager
+import com.sun.tunnelmonitoring.MinaUtil.wifiUtil
 import com.sun.tunnelmonitoring.MyApplication
 import org.apache.mina.core.buffer.IoBuffer
 import org.apache.mina.core.future.ConnectFuture
@@ -23,37 +24,29 @@ object MinaTCPClientThread: Runnable {
     private lateinit var session: IoSession
     private lateinit var connector: NioSocketConnector
     private lateinit var future: ConnectFuture
-    lateinit var address: String
+    private var address=wifiUtil.getAPAddress()
 
     fun connect(){
         Log.d("MinaTCPClientThread","连接服务器")
         Thread(this).start()
     }
 
-    private fun setAPAddr(){
-        //var wifiManager= context!!.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        var wifiManager= MyApplication.getContext().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        var dhcpInfo=wifiManager.dhcpInfo
-        var hostAddress=dhcpInfo.serverAddress
-
-        val addr=(hostAddress and 0xff).toString()+"."+((hostAddress shr 8) and 0xff).toString() +"."+((hostAddress shr 16) and 0xff).toString() +"."+((hostAddress shr 24) and 0xff).toString() +"."
-
-        address =addr
-        println(hostAddress)
-        println(addr)
-    }
-
     override fun run() {
-        setAPAddr()
         Log.d("MinaTCPClientThread","客户端连接开始...")
         connector = NioSocketConnector()
+        //添加过滤器
         connector.filterChain.addLast("codec",
             ProtocolCodecFilter(TextLineCodecFactory(Charset.forName("UTF-8"),
                 LineDelimiter.WINDOWS.value, LineDelimiter.WINDOWS.value)))
+        //设置超时
         connector.connectTimeoutCheckInterval=10000
+
         connector.handler= MinaTCPClientHandler()
-        //var addr=InetSocketAddress(address,3344)
-        var addr=InetSocketAddress("localhost",3344)
+
+        //用本地IP调试
+        address="localhost"
+        var addr=InetSocketAddress(address,3344)
+        //var addr=InetSocketAddress("localhost",3344)
         connector.setDefaultRemoteAddress(addr)
         // 监听客户端是否断线
         connector.addListener(object : IoListener() {//监听连接状态，断线 重连
@@ -95,12 +88,7 @@ object MinaTCPClientThread: Runnable {
             future.awaitUninterruptibly()
             session = future.session
 
-            var text="startTCPClient"
-            var ioBuffer= IoBuffer.allocate(8)
-            ioBuffer.setAutoExpand(true)
-            ioBuffer.putString(text,Charset.forName("UTF-8").newEncoder())
-            ioBuffer!!.flip()
-            session.write(ioBuffer)
+            session.write("This message is from TCP Client")
 
             handler.post {//给SessionManager中的session赋值
                 SessionManager.session = session
