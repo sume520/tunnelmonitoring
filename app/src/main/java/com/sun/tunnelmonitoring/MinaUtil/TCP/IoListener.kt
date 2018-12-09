@@ -5,7 +5,7 @@ import org.apache.mina.core.service.IoServiceListener
 import org.apache.mina.core.session.IdleStatus
 import org.apache.mina.core.session.IoSession
 
-open class IoListener:IoServiceListener {
+open class IoListener : IoServiceListener {
     override fun sessionDestroyed(p0: IoSession?) {
     }
 

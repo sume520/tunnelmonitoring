@@ -1,33 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
               android:orientation="vertical"
-             tools:context=".HomeFragment">
+              tools:context=".HomeFragment">
 
-    <RadioGroup android:id="@+id/radio_netprotocal" android:layout_width="wrap_content" android:layout_height="wrap_content">
-        <RadioButton android:id="@+id/tcpserver" android:text="TCP服务端" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <RadioButton android:id="@+id/tcpclient" android:text="TCP客户端" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <RadioButton android:id="@+id/udpserver" android:text="UDP服务端" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <RadioButton android:id="@+id/udpclient" android:text="UDP客户端" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <RadioGroup android:id="@+id/radio_netprotocal" android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+        <RadioButton android:id="@+id/tcpserver" android:text="TCP服务端" android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/tcpclient" android:text="TCP客户端" android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/udpserver" android:text="UDP服务端" android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/udpclient" android:text="UDP客户端" android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"/>
     </RadioGroup>
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="AP地址："/>
-        <TextView android:id="@+id/tv_ap_address" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/tv_ap_address" android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-        <EditText android:id="@+id/et_sendtext" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"/>
-        <Button android:id="@+id/send" android:text="发送" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+        <EditText android:id="@+id/et_sendtext" android:layout_width="0dp" android:layout_weight="1"
+                  android:layout_height="wrap_content"/>
+        <Button android:id="@+id/send" android:text="发送" android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <Button android:id="@+id/bt_sendfile" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="发送文件"/>
+    <Button android:id="@+id/bt_sendfile" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="发送文件"/>
 
     <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingBottom="32dp">
-        <TextView android:id="@+id/tv_rectext" android:layout_margin="4dp" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:paddingBottom="32dp"/>
+        <TextView android:id="@+id/tv_rectext" android:layout_margin="4dp" android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:paddingBottom="32dp"/>
     </ScrollView>
 
 

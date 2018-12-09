@@ -6,22 +6,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_home.*
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
-private const val PERMISSION_REQUEST_READ_WRITE_EXTERNAL_STORAGE=1
+private const val PERMISSION_REQUEST_READ_WRITE_EXTERNAL_STORAGE = 1
 
 class MainActivity : AppCompatActivity() {
 
@@ -98,14 +94,14 @@ class MainActivity : AppCompatActivity() {
 
     //权限申请回调
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode== PERMISSION_REQUEST_READ_WRITE_EXTERNAL_STORAGE){
-            if(grantResults.size>0){
+        if (requestCode == PERMISSION_REQUEST_READ_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.size > 0) {
                 println(grantResults.size)
-                for(res in grantResults){
-                    if(res==PackageManager.PERMISSION_GRANTED)
-                        Toast.makeText(this,"获取到权限", Toast.LENGTH_SHORT).show()
-                    else{
-                        Toast.makeText(this,"获取权限被拒绝，重启软件后将重新获取", Toast.LENGTH_SHORT).show()
+                for (res in grantResults) {
+                    if (res == PackageManager.PERMISSION_GRANTED)
+                        Toast.makeText(this, "获取到权限", Toast.LENGTH_SHORT).show()
+                    else {
+                        Toast.makeText(this, "获取权限被拒绝，重启软件后将重新获取", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

@@ -1,5 +1,18 @@
-package com.sun.tunnelmonitoring.File
-
 import java.io.Serializable
+import java.security.MessageDigest
 
-data class FileInfo(var filename: String, var filesize: Int, var filedata: ByteArray) : Serializable
+data class FileInfo(var filename: String, var filesize: Long, var filedata: ByteArray) : Serializable {
+    fun getMD5(): ByteArray? {
+        var md = MessageDigest.getInstance("MD5")
+        var md5 = md.digest(filedata)
+        return md5
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return (other as FileInfo).getMD5() == this.getMD5()
+    }
+
+    override fun toString(): String {
+        return "文件名：${filename}\n文件大小：${filesize / 1024}Kb\nMD5：${getMD5()!!.joinToString(" ")}"
+    }
+}

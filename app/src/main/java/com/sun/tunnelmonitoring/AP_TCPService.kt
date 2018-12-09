@@ -1,8 +1,8 @@
 package com.sun.tunnelmonitoring
 
 import android.app.IntentService
-import android.content.Intent
 import android.content.Context
+import android.content.Intent
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import com.threshold.logger.PrettyLogger
@@ -23,10 +23,10 @@ private const val ACTION_UDP_FILE = "com.sun.tunnelmonitoring.action.UDP.FILE"
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-class AP_TCPService : IntentService("AP_TCPService"),PrettyLogger {
-    var serverSocket:ServerSocket?=null
-    private var rec_text:String?=null
-    private var localBroadcastManager:LocalBroadcastManager?=null
+class AP_TCPService : IntentService("AP_TCPService"), PrettyLogger {
+    var serverSocket: ServerSocket? = null
+    private var rec_text: String? = null
+    private var localBroadcastManager: LocalBroadcastManager? = null
 
     override fun onHandleIntent(intent: Intent?) {
         when (intent?.action) {
@@ -52,19 +52,19 @@ class AP_TCPService : IntentService("AP_TCPService"),PrettyLogger {
      * parameters.
      */
     private fun handleActionOrd() {
-        serverSocket=ServerSocket()
-        serverSocket!!.reuseAddress=true
+        serverSocket = ServerSocket()
+        serverSocket!!.reuseAddress = true
         serverSocket!!.bind(InetSocketAddress(8888))
         //waiting clients connect
-        Log.d("AP_TCPService","监听客服端")
-        var client= serverSocket!!.accept()
-        var inputStream=client.getInputStream()
-        var buf=BufferedReader(InputStreamReader(inputStream))
-        rec_text=buf.readText()
+        Log.d("AP_TCPService", "监听客服端")
+        var client = serverSocket!!.accept()
+        var inputStream = client.getInputStream()
+        var buf = BufferedReader(InputStreamReader(inputStream))
+        rec_text = buf.readText()
         debug { rec_text }
-        localBroadcastManager= LocalBroadcastManager.getInstance(this)
-        var intent=Intent("com.sun.tunnelmonitoring.LOCAL_BROADCAST")
-        intent.putExtra("rec_text",rec_text)
+        localBroadcastManager = LocalBroadcastManager.getInstance(this)
+        var intent = Intent("com.sun.tunnelmonitoring.LOCAL_BROADCAST")
+        intent.putExtra("rec_text", rec_text)
         localBroadcastManager!!.sendBroadcast(intent)
 
         startActionOrd(this)
@@ -88,9 +88,9 @@ class AP_TCPService : IntentService("AP_TCPService"),PrettyLogger {
         // TODO: Customize helper method
         @JvmStatic
         fun startActionOrd(context: Context) {
-            Log.d("startActionOrd","打开服务")
+            Log.d("startActionOrd", "打开服务")
             val intent = Intent(context, AP_TCPService::class.java)
-            intent.action= ACTION_TCP_ORD
+            intent.action = ACTION_TCP_ORD
             context.startService(intent)
         }
 

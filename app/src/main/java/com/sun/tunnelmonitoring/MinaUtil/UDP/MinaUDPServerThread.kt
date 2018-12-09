@@ -7,18 +7,14 @@ import com.sun.tunnelmonitoring.MyApplication
 import org.apache.mina.core.session.IdleStatus
 import org.apache.mina.filter.codec.ProtocolCodecFilter
 import org.apache.mina.filter.codec.serialization.ObjectSerializationCodecFactory
-import org.apache.mina.filter.codec.textline.LineDelimiter
-import org.apache.mina.filter.codec.textline.TextLineCodecFactory
 import org.apache.mina.transport.socket.nio.NioDatagramAcceptor
-import org.apache.mina.filter.logging.LoggingFilter
 import java.net.InetSocketAddress
-import java.nio.charset.Charset
 
-object MinaUDPServerThread:Runnable {
-    private var handler= Handler()
+object MinaUDPServerThread : Runnable {
+    private var handler = Handler()
     private lateinit var acceptor: NioDatagramAcceptor
 
-    fun startUDPServer(){
+    fun startUDPServer() {
         Thread(this).start()
     }
 
@@ -41,19 +37,19 @@ object MinaUDPServerThread:Runnable {
                         LineDelimiter.WINDOWS.value, LineDelimiter.WINDOWS.value)
                 )
             )*/
-            acceptor.filterChain.addLast("codec",ProtocolCodecFilter(ObjectSerializationCodecFactory()))
+            acceptor.filterChain.addLast("codec", ProtocolCodecFilter(ObjectSerializationCodecFactory()))
 
             val dcfg = acceptor.sessionConfig
             dcfg.setReuseAddress(true)
 
             acceptor.bind(InetSocketAddress(3344))
             handler.post {
-                Toast.makeText(MyApplication.getContext(),"启动UDP服务成功",Toast.LENGTH_SHORT).show()
+                Toast.makeText(MyApplication.getContext(), "启动UDP服务成功", Toast.LENGTH_SHORT).show()
             }
-        }catch (e:Exception){
-            Log.d("MinaUDPServerThread","启动UDP服务失败")
+        } catch (e: Exception) {
+            Log.d("MinaUDPServerThread", "启动UDP服务失败")
             handler.post {
-                Toast.makeText(MyApplication.getContext(),"启动UDP服务失败",Toast.LENGTH_SHORT).show()
+                Toast.makeText(MyApplication.getContext(), "启动UDP服务失败", Toast.LENGTH_SHORT).show()
             }
         }
     }

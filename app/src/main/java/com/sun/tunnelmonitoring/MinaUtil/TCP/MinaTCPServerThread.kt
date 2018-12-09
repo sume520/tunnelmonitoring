@@ -4,22 +4,22 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.sun.tunnelmonitoring.MyApplication
+import org.apache.mina.core.service.IoAcceptor
 import org.apache.mina.core.session.IdleStatus
+import org.apache.mina.filter.codec.ProtocolCodecFilter
 import org.apache.mina.filter.codec.textline.LineDelimiter
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory
-import org.apache.mina.filter.codec.ProtocolCodecFilter
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor
-import org.apache.mina.core.service.IoAcceptor
 import java.net.InetSocketAddress
 import java.nio.charset.Charset
 
 
-object MinaTCPServerThread:Runnable {
-    private var handler=Handler()
-    private val PORT=3344
+object MinaTCPServerThread : Runnable {
+    private var handler = Handler()
+    private val PORT = 3344
     private lateinit var acceptor: IoAcceptor
 
-    fun startTCPServer(){
+    fun startTCPServer() {
         Thread(this).start()
     }
 
@@ -48,14 +48,14 @@ object MinaTCPServerThread:Runnable {
             acceptor.handler = MinaTCPServerHandler()
             // 绑定端口
             acceptor.bind(InetSocketAddress(PORT))
-            Log.d("MinaTcpServerThread","服务器启动成功... 端口号未：$PORT")
+            Log.d("MinaTcpServerThread", "服务器启动成功... 端口号未：$PORT")
             handler.post {
-                Toast.makeText(MyApplication.getContext(),"服务器启动成功",Toast.LENGTH_SHORT).show()
+                Toast.makeText(MyApplication.getContext(), "服务器启动成功", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            Log.d("MinaTCPServerThread","服务器启动异常...")
+            Log.d("MinaTCPServerThread", "服务器启动异常...")
             e.printStackTrace()
-            handler.post { Toast.makeText(MyApplication.getContext(),"服务器启动失败",Toast.LENGTH_SHORT).show() }
+            handler.post { Toast.makeText(MyApplication.getContext(), "服务器启动失败", Toast.LENGTH_SHORT).show() }
         }
 
     }

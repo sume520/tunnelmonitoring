@@ -5,15 +5,15 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.sun.tunnelmonitoring.MyApplication
-import java.io.*
-import java.lang.Exception
+import java.io.File
+import java.io.FileNotFoundException
 
 object FileUtil {
-    var handler=Handler()
+    var handler = Handler()
 
-    fun readFile(filename:String): ByteArray? {
+    fun readFile(filename: String): ByteArray? {
         var filename = Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename
-        var data:ByteArray?=null
+        var data: ByteArray? = null
         try {
             var file = File(filename)
             data = file.readBytes()
@@ -24,13 +24,13 @@ object FileUtil {
         return data
     }
 
-    fun writeFile(filename:String,data:ByteArray){
+    fun writeFile(filename: String, data: ByteArray) {
         Thread {
-            var filename= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" +filename
-            var file=File(filename)
-            if(!file.exists()) {
+            var filename = Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename
+            var file = File(filename)
+            if (!file.exists()) {
                 file.createNewFile()
-                Log.d("FileUtil","文件 $filename 不存在，创建新文件")
+                Log.d("FileUtil", "文件 $filename 不存在，创建新文件")
             }
             try {
                 file.writeBytes(data)
@@ -40,16 +40,16 @@ object FileUtil {
         }.start()
     }
 
-    fun createFile(filename:String){
-        if(filename.isBlank())
-            Toast.makeText(MyApplication.getContext(),"文件名不能为空",Toast.LENGTH_SHORT).show()
-        else{
-            var file=File(Environment.getExternalStorageDirectory().getCanonicalPath() + "/"+filename)
-            if(file.exists())
-                Toast.makeText(MyApplication.getContext(),"文件已存在",Toast.LENGTH_SHORT).show()
+    fun createFile(filename: String) {
+        if (filename.isBlank())
+            Toast.makeText(MyApplication.getContext(), "文件名不能为空", Toast.LENGTH_SHORT).show()
+        else {
+            var file = File(Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename)
+            if (file.exists())
+                Toast.makeText(MyApplication.getContext(), "文件已存在", Toast.LENGTH_SHORT).show()
             else {
                 file.createNewFile()
-                Toast.makeText(MyApplication.getContext(),"文件 ${filename} 创建完成",Toast.LENGTH_SHORT).show()
+                Toast.makeText(MyApplication.getContext(), "文件 ${filename} 创建完成", Toast.LENGTH_SHORT).show()
             }
         }
     }

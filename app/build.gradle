@@ -44,4 +44,6 @@ dependencies {
     //implementation 'com.github.hotchemi:permissionsdispatcher:3.0.0'
     //annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.0.0'
     implementation files('libs/slf4j-simple-1.7.25.jar')
+    implementation files('libs/netty-all-4.1.32.Final.jar')
+    implementation files('libs/netty-all-4.1.32.Final-sources.jar')
 }

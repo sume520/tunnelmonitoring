@@ -1,32 +1,26 @@
 package com.sun.tunnelmonitoring
 
 import android.os.Bundle
-import android.os.Environment
-import android.speech.tts.TextToSpeech
 import android.support.v4.app.Fragment
+import android.telephony.mbms.FileInfo
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-
+import com.sun.tunnelmonitoring.File.FileUtil
+import com.sun.tunnelmonitoring.MinaUtil.SessionManager
 import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPClientThread
 import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPServerThread
-import com.sun.tunnelmonitoring.MinaUtil.SessionManager
 import com.sun.tunnelmonitoring.MinaUtil.UDP.MinaUDPClientThread
 import com.sun.tunnelmonitoring.MinaUtil.UDP.MinaUDPServerThread
 import com.sun.tunnelmonitoring.MinaUtil.wifiUtil
-import kotlinx.android.synthetic.main.fragment_home.*
 import com.threshold.logger.PrettyLogger
-
+import kotlinx.android.synthetic.main.fragment_home.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import com.sun.tunnelmonitoring.File.FileInfo
-import com.sun.tunnelmonitoring.File.FileUtil
-import org.apache.mina.core.buffer.IoBuffer
-import java.io.*
 
 
 class HomeFragment : Fragment(), PrettyLogger {
@@ -43,8 +37,8 @@ class HomeFragment : Fragment(), PrettyLogger {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        var view=inflater.inflate(R.layout.fragment_home, container, false)
-        textview=view.findViewById(R.id.tv_rectext)
+        var view = inflater.inflate(R.layout.fragment_home, container, false)
+        textview = view.findViewById(R.id.tv_rectext)
         return view
     }
 
@@ -57,58 +51,52 @@ class HomeFragment : Fragment(), PrettyLogger {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         radio_netprotocal.setOnCheckedChangeListener { group, checkedId ->
-            when(checkedId){
-                R.id.tcpserver-> {
+            when (checkedId) {
+                R.id.tcpserver -> {
                     //MinaUDPServerThread.closeServer()
-                    Log.d("HomeFragment","选中tcp服务器")
-                    et_sendtext.isClickable=false
+                    Log.d("HomeFragment", "选中tcp服务器")
+                    et_sendtext.isClickable = false
                     //AP_TCPService.startActionOrd(this!!.context!!)
                     MinaTCPServerThread.startTCPServer()
-                    tv_ap_address.text=""
+                    tv_ap_address.text = ""
                 }
-                R.id.udpserver-> {
+                R.id.udpserver -> {
                     //MinaTCPServerThread.closeServer()
-                    et_sendtext.isClickable=false
-                    MinaUDPServerThread.startUDPServer()
-                    tv_ap_address.text=""
+                    et_sendtext.isClickable = false
+                    UDPServer.start()
+                    tv_ap_address.text = ""
                 }
-                R.id.tcpclient-> {
+                R.id.tcpclient -> {
                     //setAPAddr()
-                    et_sendtext.isClickable=true
+                    et_sendtext.isClickable = true
                     MinaTCPClientThread.connect()
-                    tv_ap_address.text=wifiUtil.getAPAddress()
+                    tv_ap_address.text = wifiUtil.getAPAddress()
                 }
-                R.id.udpclient-> {
-                    et_sendtext.isClickable=true
-                    MinaUDPClientThread.connect()
-                    tv_ap_address.text=wifiUtil.getAPAddress()
+                R.id.udpclient -> {
+                    et_sendtext.isClickable = true
+                    UdpClient.start()
+                    tv_ap_address.text = wifiUtil.getAPAddress()
                 }
             }
         }
 
         send.setOnClickListener {
-            var text=et_sendtext.text.toString()
+            var text = et_sendtext.text.toString()
             SessionManager.write(text)
             et_sendtext.text.clear()
         }
 
-        bt_sendfile.setOnClickListener{
+        bt_sendfile.setOnClickListener {
             //var filename = "tunneldata.txt"
-            var filename="tunneldata.txt"
-            var data = FileUtil.readFile(filename)
-            println(data)
-            if(data!=null) {
-                var fileInfo = FileInfo(filename, data!!.size, data)
-                SessionManager.write(fileInfo)
-            }else
-                Toast.makeText(context,"找不到文件",Toast.LENGTH_SHORT).show()
+            var filename = "tunneldata.txt"
+            UdpClient.write(filename)
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     //在UI线程中处理EventBus事件
-    fun onUIUpdateEvent(messageEvent: MessageEvent){
-        textview.append(messageEvent.message+"\n")
+    fun onUIUpdateEvent(messageEvent: MessageEvent) {
+        textview.append(messageEvent.message + "\n")
         view!!.invalidate()
     }
 
