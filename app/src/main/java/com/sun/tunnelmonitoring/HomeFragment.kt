@@ -1,20 +1,17 @@
 package com.sun.tunnelmonitoring
 
+import UDPServer
+import UdpUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.telephony.mbms.FileInfo
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import com.sun.tunnelmonitoring.File.FileUtil
 import com.sun.tunnelmonitoring.MinaUtil.SessionManager
 import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPClientThread
 import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPServerThread
-import com.sun.tunnelmonitoring.MinaUtil.UDP.MinaUDPClientThread
-import com.sun.tunnelmonitoring.MinaUtil.UDP.MinaUDPServerThread
 import com.sun.tunnelmonitoring.MinaUtil.wifiUtil
 import com.threshold.logger.PrettyLogger
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -74,7 +71,7 @@ class HomeFragment : Fragment(), PrettyLogger {
                 }
                 R.id.udpclient -> {
                     et_sendtext.isClickable = true
-                    UdpClient.start()
+                    UdpUtil.start()
                     tv_ap_address.text = wifiUtil.getAPAddress()
                 }
             }
@@ -89,7 +86,11 @@ class HomeFragment : Fragment(), PrettyLogger {
         bt_sendfile.setOnClickListener {
             //var filename = "tunneldata.txt"
             var filename = "tunneldata.txt"
-            UdpClient.write(filename)
+            UdpUtil.write(filename)
+        }
+
+        bt_senddata.setOnClickListener {
+            UdpUtil.write("01 07 24 15 08 04 12 34 00 10 05 DC 00 5F 5A BA 00 00 D2 B8 01 F9 01 EA 2B 56 27 0F 0B 0B 00 C8 64 38 34 45 00 07 00 01 0F FF 0E A9")
         }
     }
 

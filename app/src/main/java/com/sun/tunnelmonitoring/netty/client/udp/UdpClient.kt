@@ -61,7 +61,7 @@ object UdpClient {
 
             channel = bootstrap.bind(0).sync().channel()
             Toast.makeText(MyApplication.getContext(),"已启动UDP客户端",Toast.LENGTH_SHORT).show()
-            Log.d("UdpClient","已启动UDP客户端")
+            Log.d("ClientUtil", "已启动UDP客户端")
             //channel.closeFuture().await(1000)
         } catch (e: Exception) {
             e.printStackTrace()

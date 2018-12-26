@@ -31,9 +31,14 @@
         <Button android:id="@+id/send" android:text="发送" android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
     </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+        <Button android:id="@+id/bt_sendfile" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="发送文件"/>
 
-    <Button android:id="@+id/bt_sendfile" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="发送文件"/>
+        <Button android:id="@+id/bt_senddata" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="发送数据"/>
+
+    </LinearLayout>
 
     <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingBottom="32dp">
         <TextView android:id="@+id/tv_rectext" android:layout_margin="4dp" android:layout_width="match_parent"
