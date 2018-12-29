@@ -24,13 +24,18 @@ class MainActivity : AppCompatActivity() {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
+                title="主页"
                 supportFragmentManager.inTransaction { replace(R.id.activity_fragment, HomeFragment.newInstance()) }
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_dashboard -> {
+            R.id.navigation_monitor -> {
+                title="监控中心"
+                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,MonitorFragment.newInstance()) }
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_notifications -> {
+            R.id.navigation_usercenter -> {
+                title="用户中心"
+                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,UserCenterFragment.newInstance()) }
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -42,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         supportFragmentManager.inTransaction { add(R.id.activity_fragment, HomeFragment.newInstance()) }
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-
+        title="主页"
         //getPermissions()
         EasyPermissions.requestPermissions(
             this@MainActivity,

@@ -4,16 +4,18 @@
     <item
             android:id="@+id/navigation_home"
             android:icon="@drawable/ic_home_black_24dp"
-            android:title="@string/title_home"/>
+            android:title="主页"/>
 
     <item
-            android:id="@+id/navigation_dashboard"
-            android:icon="@drawable/ic_dashboard_black_24dp"
-            android:title="@string/title_dashboard"/>
-
-    <item
-            android:id="@+id/navigation_notifications"
+            android:id="@+id/navigation_monitor"
             android:icon="@drawable/ic_notifications_black_24dp"
-            android:title="@string/title_notifications"/>
+            android:title="监控中心"/>
+
+    <item
+            android:id="@+id/navigation_usercenter"
+            android:icon="@drawable/ic_dashboard_black_24dp"
+            android:title="用户中心"/>
+
+
 
 </menu>

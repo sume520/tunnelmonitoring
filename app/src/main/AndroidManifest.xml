@@ -1,53 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
-          package="com.sun.tunnelmonitoring">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.sun.tunnelmonitoring">
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission
-            android:name="android.permission.INTERNET"
-            android:required="true"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+        android:name="android.permission.INTERNET"
+        android:required="true" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-            android:name="com.sun.tunnelmonitoring.MyApplication"
-            tools:replace="android:appComponentFactory"
-            android:appComponentFactory="factory"
-            android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:appComponentFactory="factory"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="android:appComponentFactory">
         <activity
-                android:name=".MainActivity"
-                android:label="@string/app_name">
+            android:name=".MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ClientActivity">
-        </activity>
-        <activity android:name=".ServerActivity">
-        </activity>
+        <activity android:name=".ClientActivity"></activity>
+        <activity android:name=".ServerActivity"></activity>
 
         <service
-                android:name=".AP_TCPService"
-                android:exported="false">
-        </service>
-        <receiver android:name=".MainActivity$SocketReceiver"
-                  android:enabled="true"
-                  android:exported="true">
+            android:name=".AP_TCPService"
+            android:exported="false"></service>
+
+        <receiver
+            android:name=".MainActivity$SocketReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter android:priority="100">
-                <action android:name="com.sun.tunnelmcom.sun.tunnelmonitoring.LOCAL_BROADCAST"/>
+                <action android:name="com.sun.tunnelmcom.sun.tunnelmonitoring.LOCAL_BROADCAST" />
             </intent-filter>
         </receiver>
 
+        <activity android:name=".login.LoginActivity"></activity>
     </application>
 
 </manifest>
