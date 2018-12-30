@@ -35,7 +35,6 @@ class UserCenterFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         tx_user_center.setOnClickListener {
-            Toast.makeText(MyApplication.getContext(),"点击文字",Toast.LENGTH_SHORT).show()
             val intent= Intent(activity,LoginActivity::class.java)
             intent.putExtra("param","login")
             startActivity(intent)

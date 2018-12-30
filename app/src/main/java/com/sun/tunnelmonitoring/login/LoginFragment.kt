@@ -6,11 +6,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
-import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,13 +26,14 @@ import java.io.IOException
 import java.net.URLDecoder
 
 class LoginFragment : Fragment() {
-    var sharedPref=PreferenceManager.getDefaultSharedPreferences(activity)
+    private lateinit var sharedPref:SharedPreferences
     //private var sharePref=PreferenceManager.getDefaultSharedPreferences(activity)
     private var editor: SharedPreferences.Editor? = null
     private var loginobject: JSONObject? = null
     private var loginjsonString: String? = null
-    var x: String = ""
-    var json:String = ""
+    private var response: String = ""
+    private var json:String = ""
+    private var message=""
     private val URL = "http://192.168.43.129:1234/user/applogin"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -51,10 +51,7 @@ class LoginFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-//        pref = PreferenceManager.getDefaultSharedPreferences(activity)
-//        val isRemember = pref.getBoolean("remember_password", false)
-//        val isauto = pref.getBoolean("auto_login", false)
-
+        sharedPref=activity!!.getSharedPreferences("userdata",Context.MODE_PRIVATE)
         val isRemember=sharedPref.getBoolean("remember_password",false)
         val isauto=sharedPref.getBoolean("auto_login",false)
         tb_show_hide_pass.setOnCheckedChangeListener{ compoundButton, isChecked ->
@@ -69,8 +66,6 @@ class LoginFragment : Fragment() {
             startActivity(intent)
         }
         if (isRemember) {
-//            val account = pref.getString("account", "")
-//            val password = pref.getString("password", "")
             val account=sharedPref.getString("account","")
             val password=sharedPref.getString("password","")
             et_account!!.setText(account)
@@ -86,39 +81,35 @@ class LoginFragment : Fragment() {
                     json = postJson(account, password)
                 }
             }.start()
-            if (j == "1") {
+            if (json == "1") {
                 editor = sharedPref.edit()
                 if (cb_remember_pass!!.isChecked()) {
-                    editor.putBoolean("remember_password", true)
-                    editor.putString("account", account)
-                    editor.putString("password", password)
-                    if (login.isChecked()) {
-                        editor.putBoolean("auto_login", true)
+                    editor!!.putBoolean("remember_password", true)
+                    editor!!.putString("account", account)
+                    editor!!.putString("password", password)
+                    if (cb_autologin.isChecked()) {
+                        editor!!.putBoolean("auto_login", true)
                     } else {
-                        editor.putBoolean("auto_login", false)
+                        editor!!.putBoolean("auto_login", false)
                     }
                 } else {
-                    editor.clear()
+                    editor!!.clear()
                 }
-                editor.apply()
+                editor!!.apply()
                 val intent2 = Intent(activity, MainActivity::class.java)
                 startActivity(intent2)
             } else {
                 Toast.makeText(activity, "用户名或密码错误", Toast.LENGTH_SHORT).show()
             }
         }
-//        registered.setOnClickListener(View.OnClickListener {
-//            val intent1 = Intent(activity, zhuceActivity::class.java)
-//            startActivity(intent1)
-//        })
     }
 
     private fun postJson(account: String, password: String): String {
         val loginclient = OkHttpClient()
         loginobject = JSONObject()
         try {
-            loginobject.put("username", account)
-            loginobject.put("password", password)
+            loginobject!!.put("username", account)
+            loginobject!!.put("password", password)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -135,30 +126,30 @@ class LoginFragment : Fragment() {
             override fun onFailure(request: Request, e: IOException) {
                 e.printStackTrace()
             }
-
             @Throws(IOException::class)
             override fun onResponse(response: Response) {
                 val msg = handler.obtainMessage()
                 msg.obj = response.body().string()
-                if (msg.equals("1")) {
-                    x = "1"
-                } else {
-                    handler.sendMessage(msg)
-                }
+                handler.sendMessage(msg)
             }
         })
-        return x
+        return response
     }
 
     internal var handler = Handler(Handler.Callback { msg ->
-        var m = msg.obj as String
+        message = msg.obj as String
         try {
-            m = URLDecoder.decode(m, "utf-8")
-            Toast.makeText(MyApplication.getContext(), m, Toast.LENGTH_SHORT).show()
+            message = URLDecoder.decode(message, "utf-8")
+            val jsonObject = JSONObject(message)
+            response = jsonObject.getString("statas")
+            Log.d("xxxxxxxxxxxxxxxxxx", response)
+            if (response != "1") {
+                Toast.makeText(activity, response, Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        false
+        return@Callback false
     })
 }
