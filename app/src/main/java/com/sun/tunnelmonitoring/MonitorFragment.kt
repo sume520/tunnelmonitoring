@@ -18,7 +18,6 @@ import lecho.lib.hellocharts.model.Axis
 
 class MonitorFragment : Fragment() {
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -26,12 +25,10 @@ class MonitorFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_monitor, container, false)
         return view
     }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         drawChart()
     }
-
     private fun drawChart() {
         var lines = ArrayList<Line>()
         var values = ArrayList<PointValue>();//折线上的点

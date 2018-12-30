@@ -20,6 +20,11 @@ class LoginActivity : AppCompatActivity() {
                     .inTransaction { replace(R.id.loginacivity_fragment,LoginFragment.newInstance()) }
                 title="登录"
             }
+            "register"->{
+                supportFragmentManager
+                        .inTransaction { replace(R.id.loginacivity_fragment,RegisterFragment.newInstance()) }
+                title="注册"
+            }
         }
     }
 

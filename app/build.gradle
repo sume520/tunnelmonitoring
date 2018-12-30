@@ -43,14 +43,11 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.0.0'
     //权限
     implementation 'pub.devrel:easypermissions:1.0.1'
-    //implementation 'com.github.hotchemi:permissionsdispatcher:3.0.0'
-    //annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.0.0'
     implementation files('libs/slf4j-simple-1.7.25.jar')
     implementation files('libs/netty-all-4.1.32.Final.jar')
     implementation files('libs/netty-all-4.1.32.Final-sources.jar')
     implementation 'android.arch.navigation:navigation-fragment:1.0.0-alpha09'
     implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha09'
     implementation 'com.squareup.okhttp:okhttp:2.4.0'
-
     implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
 }

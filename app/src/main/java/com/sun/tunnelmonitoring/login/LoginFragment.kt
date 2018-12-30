@@ -1,11 +1,14 @@
 package com.sun.tunnelmonitoring.login
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -27,7 +30,6 @@ import java.net.URLDecoder
 
 class LoginFragment : Fragment() {
     private lateinit var sharedPref:SharedPreferences
-    //private var sharePref=PreferenceManager.getDefaultSharedPreferences(activity)
     private var editor: SharedPreferences.Editor? = null
     private var loginobject: JSONObject? = null
     private var loginjsonString: String? = null
@@ -38,7 +40,6 @@ class LoginFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
@@ -49,16 +50,18 @@ class LoginFragment : Fragment() {
                 LoginFragment()
     }
 
+    @SuppressLint("CommitPrefEdits")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        sharedPref=activity!!.getSharedPreferences("userdata",Context.MODE_PRIVATE)
+        sharedPref=PreferenceManager.getDefaultSharedPreferences(context)
+
         val isRemember=sharedPref.getBoolean("remember_password",false)
         val isauto=sharedPref.getBoolean("auto_login",false)
         tb_show_hide_pass.setOnCheckedChangeListener{ compoundButton, isChecked ->
             if (isChecked) {
-                tb_show_hide_pass.setTransformationMethod(HideReturnsTransformationMethod.getInstance())
+                tb_show_hide_pass.transformationMethod = HideReturnsTransformationMethod.getInstance()
             } else {
-                tb_show_hide_pass.setTransformationMethod(PasswordTransformationMethod.getInstance())
+                tb_show_hide_pass.transformationMethod = PasswordTransformationMethod.getInstance()
             }
         }
         if (isauto) {
@@ -70,42 +73,51 @@ class LoginFragment : Fragment() {
             val password=sharedPref.getString("password","")
             et_account!!.setText(account)
             et_password!!.setText(password)
-            cb_remember_pass!!.setChecked(true)
+            cb_remember_pass!!.isChecked = true
         }
         bt_login!!.setOnClickListener{
-            val account = et_account!!.getText().toString()
-            val password = et_password!!.getText().toString()
-
-            object : Thread() {
-                override fun run() {
-                    json = postJson(account, password)
-                }
-            }.start()
-            if (json == "1") {
-                editor = sharedPref.edit()
-                if (cb_remember_pass!!.isChecked()) {
-                    editor!!.putBoolean("remember_password", true)
-                    editor!!.putString("account", account)
-                    editor!!.putString("password", password)
-                    if (cb_autologin.isChecked()) {
-                        editor!!.putBoolean("auto_login", true)
+            val account = et_account!!.text.toString()
+            val password = et_password!!.text.toString()
+            Thread{
+                postJson(account, password)
+                if (response == "1")
+                {
+                    editor = sharedPref.edit()
+                    if (cb_remember_pass!!.isChecked()) {
+                        editor!!.putBoolean("remember_password", true)
+                        editor!!.putString("account", account)
+                        editor!!.putString("password", password)
+                        if (cb_autologin.isChecked()) {
+                            editor!!.putBoolean("auto_login", true)
+                        } else {
+                            editor!!.putBoolean("auto_login", false)
+                        }
                     } else {
-                        editor!!.putBoolean("auto_login", false)
+                        editor!!.clear()
+                    }
+                        editor!!.apply()
+                    val intent = Intent(activity, MainActivity::class.java)
+                    startActivity(intent)
+                    handler.post{
+                        Toast.makeText(activity,"登录成功",Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    editor!!.clear()
+                    handler.post{
+                        Toast.makeText(activity, "登录失败", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                editor!!.apply()
-                val intent2 = Intent(activity, MainActivity::class.java)
-                startActivity(intent2)
-            } else {
-                Toast.makeText(activity, "用户名或密码错误", Toast.LENGTH_SHORT).show()
-            }
+            }.start()
         }
-    }
 
-    private fun postJson(account: String, password: String): String {
-        val loginclient = OkHttpClient()
+        bt_register.setOnClickListener {
+            val intent=Intent(context,LoginActivity::class.java)
+            intent.putExtra("param","register")
+            startActivity(intent)
+        }
+
+    }
+    private fun postJson(account: String, password: String) {
+        val client = OkHttpClient()
         loginobject = JSONObject()
         try {
             loginobject!!.put("username", account)
@@ -113,27 +125,28 @@ class LoginFragment : Fragment() {
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-
         loginjsonString = null
         loginjsonString = loginobject.toString()
         val body = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), loginjsonString)
         val request = Request.Builder()
-                .url("http://192.168.43.129:1234/user/applogin")
+                .url(URL)
                 .post(body)
                 .build()
-        val call = loginclient.newCall(request)
+        val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onFailure(request: Request, e: IOException) {
                 e.printStackTrace()
+                Log.e("okHttp","发送失败")
             }
             @Throws(IOException::class)
             override fun onResponse(response: Response) {
                 val msg = handler.obtainMessage()
                 msg.obj = response.body().string()
                 handler.sendMessage(msg)
+                Log.d("okHttp",msg.obj.toString())
             }
         })
-        return response
+        return
     }
 
     internal var handler = Handler(Handler.Callback { msg ->
@@ -142,14 +155,13 @@ class LoginFragment : Fragment() {
             message = URLDecoder.decode(message, "utf-8")
             val jsonObject = JSONObject(message)
             response = jsonObject.getString("statas")
-            Log.d("xxxxxxxxxxxxxxxxxx", response)
-            if (response != "1") {
+            Log.d("handler", response)
+            if (!"1".equals(response)) {
                 Toast.makeText(activity, response, Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return@Callback false
     })
 }
