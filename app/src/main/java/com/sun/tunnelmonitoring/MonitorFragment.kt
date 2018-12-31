@@ -17,6 +17,8 @@ import lecho.lib.hellocharts.model.Axis
 
 
 class MonitorFragment : Fragment() {
+    private var hasLabelForSelected=false
+    private var hasLabels=false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,12 +34,16 @@ class MonitorFragment : Fragment() {
     private fun drawChart() {
         var lines = ArrayList<Line>()
         var values = ArrayList<PointValue>();//折线上的点
-        values.add(PointValue(0f, 2f))
-        values.add(PointValue(1f, 4f))
-        values.add(PointValue(2f, 3f))
-        values.add(PointValue(3f, 4f))
+        values.add(PointValue(0F, 2f))
+        values.add(PointValue(1F, 4f))
+        values.add(PointValue(2F, 3f))
+        values.add(PointValue(3F, 4f))
+        values.add(PointValue(4F, 7f))
+        values.add(PointValue(5F, 7f))
+        values.add(PointValue(6F, 3f))
+        values.add(PointValue(7F, 2f))
 
-        val line = Line(values).setColor(Color.GREEN)//声明线并设置颜色
+        val line = Line(values).setColor(0xFF2196F3.toInt())//声明线并设置颜色
         line.setCubic(false)//设置是平滑的还是直的
         lines.add(line)
 
@@ -46,13 +52,17 @@ class MonitorFragment : Fragment() {
         val data = LineChartData()
         val axisX = Axis()//x轴
         val axisY = Axis()//y轴
+        axisX.lineColor=0xFF004D40.toInt()
+        axisY.lineColor=0xFF004D40.toInt()
         axisX.typeface= Typeface.MONOSPACE
-        axisY.typeface= Typeface.MONOSPACE
         data.axisXBottom = axisX
         data.axisYLeft = axisY
         data.lines = lines
-        mChartView.setLineChartData(data)//给图表设置数据
+        line.isFilled = true
+        toggleLabelForSelected()
+        mChartView.lineChartData = data//给图表设置数据
     }
+
 
     companion object {
         @JvmStatic

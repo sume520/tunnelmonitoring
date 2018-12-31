@@ -34,7 +34,6 @@ class LoginFragment : Fragment() {
     private var loginobject: JSONObject? = null
     private var loginjsonString: String? = null
     private var response: String = ""
-    private var json:String = ""
     private var message=""
     private val URL = "http://192.168.43.129:1234/user/applogin"
 
