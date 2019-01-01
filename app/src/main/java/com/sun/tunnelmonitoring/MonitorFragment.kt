@@ -1,25 +1,25 @@
 package com.sun.tunnelmonitoring
 
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import kotlinx.android.synthetic.main.fragment_monitor.*
-import lecho.lib.hellocharts.model.Line
-import lecho.lib.hellocharts.model.PointValue
-import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.gesture.ContainerScrollType
 import lecho.lib.hellocharts.gesture.ZoomType
-import lecho.lib.hellocharts.model.Axis
+import lecho.lib.hellocharts.model.*
+import java.security.SecureRandom
 
 
 class MonitorFragment : Fragment() {
-    private var hasLabelForSelected=false
-    private var hasLabels=false
-
+    private var lines=ArrayList<Line>()
+    private val maxNumberOfLines = 4
+    private val numberOfPoints = 20
+    private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,38 +31,133 @@ class MonitorFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         drawChart()
     }
-    private fun drawChart() {
-        var lines = ArrayList<Line>()
-        var values = ArrayList<PointValue>();//折线上的点
-        values.add(PointValue(0F, 2f))
-        values.add(PointValue(1F, 4f))
-        values.add(PointValue(2F, 3f))
-        values.add(PointValue(3F, 4f))
-        values.add(PointValue(4F, 7f))
-        values.add(PointValue(5F, 7f))
-        values.add(PointValue(6F, 3f))
-        values.add(PointValue(7F, 2f))
 
-        val line = Line(values).setColor(0xFF2196F3.toInt())//声明线并设置颜色
-        line.setCubic(false)//设置是平滑的还是直的
-        lines.add(line)
-
-        mChartView.setInteractive(true)//设置图表是可以交互的（拖拽，缩放等效果的前提）
-        mChartView.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL)//设置缩放方向
-        val data = LineChartData()
-        val axisX = Axis()//x轴
-        val axisY = Axis()//y轴
-        axisX.lineColor=0xFF004D40.toInt()
-        axisY.lineColor=0xFF004D40.toInt()
-        axisX.typeface= Typeface.MONOSPACE
-        data.axisXBottom = axisX
-        data.axisYLeft = axisY
-        data.lines = lines
-        line.isFilled = true
-        toggleLabelForSelected()
-        mChartView.lineChartData = data//给图表设置数据
+    private fun generateValues() {
+        for (i in 0 until maxNumberOfLines) {
+            for (j in 0 until numberOfPoints) {
+                randomNumbersTab[i][j] = SecureRandom().nextInt(90).toFloat()
+            }
+        }
     }
 
+    private fun drawChart() {
+        val colors=ArrayList<Int>()
+        colors.add(0xFF2196F3.toInt())
+        colors.add(0xFF66BB6A.toInt())
+        colors.add(0xFF673AB7.toInt())
+        colors.add(0xFFFFEB3B.toInt())
+        //产生随机数据
+        generateValues()
+
+        for (i in 0 until maxNumberOfLines){
+            val line = Line()
+            val values=ArrayList<PointValue>()
+            for (j in 0 until numberOfPoints){
+                values.add(PointValue(j.toFloat(),randomNumbersTab[i][j]))
+            }
+            line.values=values
+            line.color = colors[i]
+            line.isCubic = true
+            line.isFilled = true
+            line.setHasPoints(false)
+            lines.add(line)
+        }
+
+        //图表属性设置
+        mChartView.isInteractive = true//设置图表是可以交互的（拖拽，缩放等效果的前提）
+        mChartView.zoomType = ZoomType.HORIZONTAL//设置缩放方向
+        mChartView.setContainerScrollEnabled(true,ContainerScrollType.HORIZONTAL)
+
+        //坐标轴设置
+        val axisXY=AxisXY()
+        val axisX = axisXY.axisX//x轴
+        val axisY = axisXY.axisY//y轴
+        val xLabels=ArrayList<String>()
+        xLabels.add("10:00")
+        xLabels.add("10:20")
+        xLabels.add("10:40")
+        xLabels.add("11:00")
+        xLabels.add("11:20")
+        xLabels.add("11:40")
+        xLabels.add("12:00")
+        xLabels.add("12:20")
+        xLabels.add("12:40")
+        xLabels.add("13:00")
+        xLabels.add("13:20")
+        xLabels.add("13:40")
+        xLabels.add("14:00")
+        xLabels.add("14:20")
+        xLabels.add("14:40")
+        xLabels.add("15:00")
+        xLabels.add("15:20")
+        xLabels.add("15:40")
+        xLabels.add("16:00")
+        xLabels.add("16:20")
+        axisXY.setAxisLabels(xLabels)
+
+        axisX.typeface= Typeface.MONOSPACE
+        axisY.typeface=Typeface.MONOSPACE
+        axisX.textColor=0xFF00897B.toInt()
+        axisY.textColor=0xFF00897B.toInt()
+        axisY.setHasLines(true)
+        axisX.maxLabelChars=5
+        axisX.name="时间"
+        axisX.setHasTiltedLabels(true)
+        axisY.name="温度℃"
+
+        //图标数据设置
+        val data = LineChartData()
+        data.axisXBottom = axisX
+        data.axisYLeft = axisY
+        data.lines = lines  //设置图表折线
+        data.baseValue= Float.NEGATIVE_INFINITY
+        mChartView.lineChartData = data//给图表填充数据
+
+
+        //设置X、Y轴范围
+        val maxViewPoint = Viewport(mChartView.maximumViewport)
+        val v=Viewport()
+        v.bottom = 0f
+        v.top = 100f
+        v.left=0f
+        v.right=10f
+        maxViewPoint.top=100f
+        maxViewPoint.right=numberOfPoints.toFloat()+0.1f
+        mChartView.maximumViewport = maxViewPoint
+        mChartView.setCurrentViewportWithAnimation(v)
+    }
+
+    inner class AxisXY(){
+        val axisX = Axis()
+        val axisY = Axis()
+
+        fun setAxisValues(xValues:ArrayList<AxisValue>?=null,yValues:ArrayList<AxisValue>?=null){
+            if(xValues!=null){
+                axisX.values=xValues
+            }
+            if(yValues!=null){
+                axisY.values=yValues
+            }
+        }
+        fun setAxisLabels(xLabels:ArrayList<String>?=null,yLabels:ArrayList<String>?=null){
+            val axisXValues= ArrayList<AxisValue>()
+            val axisYValues= ArrayList<AxisValue>()
+            if(xLabels!=null) {
+                val xlabels_num=xLabels.size
+                for (i in 0 until  xlabels_num) {
+                      axisXValues.add(AxisValue(i.toFloat()).setLabel(xLabels[i]))
+                }
+                axisX.values=axisXValues
+            }
+            if(yLabels!=null) {
+                val ylabels_num=yLabels.size
+                for (i in 0 until ylabels_num) {
+                    axisYValues.add(AxisValue(i.toFloat()).setLabel(yLabels[i]))
+                }
+                axisY.values=axisYValues
+            }
+        }
+    }
 
     companion object {
         @JvmStatic
