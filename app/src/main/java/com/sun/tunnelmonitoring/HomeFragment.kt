@@ -47,7 +47,7 @@ class HomeFragment : Fragment(), PrettyLogger {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        radio_netprotocal.setOnCheckedChangeListener { group, checkedId ->
+        /*radio_netprotocal.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.tcpserver -> {
                     //MinaUDPServerThread.closeServer()
@@ -75,23 +75,55 @@ class HomeFragment : Fragment(), PrettyLogger {
                     tv_ap_address.text = wifiUtil.getAPAddress()
                 }
             }
-        }
-
+        }*/
+/*
         send.setOnClickListener {
             var text = et_sendtext.text.toString()
             SessionManager.write(text)
             et_sendtext.text.clear()
+        }*/
+
+        sw_udpserver.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){//启动服务器
+                UDPServer.start()
+            }else {//关闭服务器
+                UDPServer.close()
+            }
+            tv_ap_address.text = ""
+        }
+
+        sw_udpclient.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){//启动客户端
+                UdpClient.start()
+                tv_ap_address.text = wifiUtil.getAPAddress()
+            }else{//关闭客户端
+                UdpClient.close()
+                tv_ap_address.text=""
+            }
+        }
+
+        sw_tcpserver.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){
+                TcpServer.start()
+            }else{
+                TcpServer.close()
+            }
+            tv_ap_address.text=""
+        }
+
+        sw_tcpclient.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){
+                TcpClient.start()
+            }else{
+                TcpClient.close()
+            }
         }
 
         bt_sendfile.setOnClickListener {
-            //var filename = "tunneldata.txt"
             var filename = "tunneldata.txt"
-            UdpUtil.write(filename)
+            TcpClient.sendFile(filename)
         }
 
-        bt_senddata.setOnClickListener {
-            UdpUtil.write("01 07 24 15 08 04 12 34 00 10 05 DC 00 5F 5A BA 00 00 D2 B8 01 F9 01 EA 2B 56 27 0F 0B 0B 00 C8 64 38 34 45 00 07 00 01 0F FF 0E A9")
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

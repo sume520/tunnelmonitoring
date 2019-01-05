@@ -23,13 +23,16 @@ object UdpClient {
         return channel
     }
 
-    fun write(filename:String) {
+    fun write(filename:String) {//发送内存卡根目录指定文件
         try {
-            var filename= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename
-            var file = File(filename)
-            var fileInfo = FileInfo(file.name, file.length(), file.readBytes())
-            var bytes = ByteObjectConverter.objectToByte(fileInfo)
-            var size = bytes.size / 1024
+            val filename= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename
+            val file = File(filename)
+            if(!file.exists()){
+                Toast.makeText(MyApplication.getContext(),"文件“$filename”不存在",Toast.LENGTH_SHORT).show()
+            }
+            val fileInfo = FileInfo(file.name, file.length(), file.readBytes())
+            val bytes = ByteObjectConverter.objectToByte(fileInfo)
+            val size = bytes.size / 1024
             println("待发送数据大小：${size}Kb")
             Thread {
                 try {
@@ -43,14 +46,13 @@ object UdpClient {
                     e.printStackTrace()
                     println("发送出错")
                 }
-
             }.start()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun start() {
+    fun start() {//启动客户端
         try {
             bootstrap = Bootstrap()
             workerGroup = NioEventLoopGroup()
@@ -58,18 +60,17 @@ object UdpClient {
                 .channel(NioDatagramChannel::class.java)
                 .option(ChannelOption.SO_SNDBUF,1024*1024)
                 .handler(UdpClientHandler())
-
             channel = bootstrap.bind(0).sync().channel()
             Toast.makeText(MyApplication.getContext(),"已启动UDP客户端",Toast.LENGTH_SHORT).show()
             Log.d("ClientUtil", "已启动UDP客户端")
-            //channel.closeFuture().await(1000)
         } catch (e: Exception) {
             e.printStackTrace()
-        } finally {
-            //workerGroup.shutdownGracefully()
-            //println("客户端已关闭")
         }
+    }
 
+    fun close(){
+        workerGroup.shutdownGracefully()
+        Toast.makeText(MyApplication.getContext(),"已关闭客户端",Toast.LENGTH_SHORT).show()
     }
 
 }
