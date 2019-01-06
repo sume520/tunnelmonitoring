@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".MonitorFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MonitorFragment">
 
     <lecho.lib.hellocharts.view.LineChartView
-            android:id="@+id/mChartView"
-            android:padding="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"/>
+        android:id="@+id/mChartView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/bt_baseinform"
+        android:textSize="20dp"
+        android:text="基础信息"
+        android:background="#58D68D"
+        android:textColor="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_below="@+id/mChartView"/>
 
 </RelativeLayout>

@@ -13,8 +13,10 @@ import com.sun.tunnelmonitoring.MinaUtil.SessionManager
 import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPClientThread
 import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPServerThread
 import com.sun.tunnelmonitoring.MinaUtil.wifiUtil
+import com.sun.tunnelmonitoring.tree.TreeFragment
 import com.threshold.logger.PrettyLogger
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_monitor.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -130,7 +132,7 @@ class HomeFragment : Fragment(), PrettyLogger {
     //在UI线程中处理EventBus事件
     fun onUIUpdateEvent(messageEvent: MessageEvent) {
         textview.append(messageEvent.message + "\n")
-        view!!.invalidate()
+            view!!.invalidate()
     }
 
     override fun onDestroy() {

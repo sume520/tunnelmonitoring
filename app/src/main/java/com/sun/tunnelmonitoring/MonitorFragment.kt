@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
+import com.sun.tunnelmonitoring.tree.TreeFragment
 import kotlinx.android.synthetic.main.fragment_monitor.*
 import lecho.lib.hellocharts.gesture.ContainerScrollType
 import lecho.lib.hellocharts.gesture.ZoomType
@@ -20,16 +20,24 @@ class MonitorFragment : Fragment() {
     private val maxNumberOfLines = 4
     private val numberOfPoints = 20
     private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_monitor, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_monitor, container, false)
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         drawChart()
+
+        bt_baseinform.setOnClickListener {
+            activity!!.supportFragmentManager
+                .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        }
+
     }
 
     private fun generateValues() {
