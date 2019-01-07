@@ -1,106 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context=".HomeFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".HomeFragment">
 
 
-   <!-- <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+    <!-- <RelativeLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="8dp">
+
+         <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="UDP服务器"
+                 android:textColor="#000000"
+                 android:textSize="20dp"/>
+
+         <Switch
+                 android:id="@+id/sw_udpserver"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentRight="true"
+                 android:layout_centerInParent="true"/>
+     </RelativeLayout>
+
+     <RelativeLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_margin="8dp">
+
+         <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="UDP客户端"
+                 android:textColor="#000000"
+                 android:textSize="20dp"/>
+
+         <Switch
+                 android:id="@+id/sw_udpclient"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentRight="true"
+                 android:layout_centerInParent="true"/>
+     </RelativeLayout>-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="UDP服务器"
-                android:textColor="#000000"
-                android:textSize="20dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TCP服务器"
+            android:textColor="#000000"
+            android:textSize="20dp" />
 
         <Switch
-                android:id="@+id/sw_udpserver"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerInParent="true"/>
+            android:id="@+id/sw_tcpserver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
     <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="UDP客户端"
-                android:textColor="#000000"
-                android:textSize="20dp"/>
-
-        <Switch
-                android:id="@+id/sw_udpclient"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerInParent="true"/>
-    </RelativeLayout>-->
-
-    <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TCP服务器"
-                android:textColor="#000000"
-                android:textSize="20dp"/>
+            android:text="TCP客户端"
+            android:textColor="#000000"
+            android:textSize="20dp" />
 
         <Switch
-                android:id="@+id/sw_tcpserver"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerInParent="true"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-            android:layout_width="match_parent"
+            android:id="@+id/sw_tcpclient"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TCP客户端"
-                android:textColor="#000000"
-                android:textSize="20dp"/>
-
-        <Switch
-                android:id="@+id/sw_tcpclient"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerInParent="true"/>
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
     <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            android:text="AP地址：" />
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="AP地址："/>
-
-        <TextView
-                android:id="@+id/tv_ap_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            android:id="@+id/tv_ap_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!--<LinearLayout
@@ -123,15 +123,16 @@
     </LinearLayout>-->
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
 
         <Button
-                android:id="@+id/bt_sendfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="发送文件"/>
+            android:id="@+id/bt_sendfile"
+            android:background="#58D68D"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发送文件" />
 
         <!--<Button
                 android:id="@+id/bt_senddata"
@@ -142,16 +143,15 @@
     </LinearLayout>
 
     <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="32dp">
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="8dp"
+        android:background="#6ed7d7d7">
 
         <TextView
-                android:id="@+id/tv_rectext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:paddingBottom="32dp"/>
+            android:id="@+id/tv_rectext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </ScrollView>
 
 

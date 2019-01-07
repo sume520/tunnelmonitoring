@@ -1,6 +1,7 @@
 package com.sun.tunnelmonitoring
 
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.sun.tunnelmonitoring.db.manager.UserDao
 import com.sun.tunnelmonitoring.login.LoginActivity
 import com.sun.tunnelmonitoring.login.LoginFragment
 import kotlinx.android.synthetic.main.fragment_user_center.*
@@ -26,20 +28,34 @@ class UserCenterFragment : Fragment() {
 
 
     companion object {
-        @JvmStatic
-        fun newInstance() =
-            UserCenterFragment()
+        @SuppressLint("StaticFieldLeak")
+        private var instance:UserCenterFragment?=null
+            get() {
+                if(field==null){
+                    field= UserCenterFragment()
+                }
+                return field
+            }
+        @Synchronized
+        fun get():UserCenterFragment{
+            return instance!!
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        var user=UserDao.queryById(1)
+        if(user!=null) {
+            tv_username.text = user.username
+        }else{
+            tv_username.text="用户"
+        }
 
-        tx_user_center.setOnClickListener {
+        tv_username.setOnClickListener {
             val intent= Intent(activity,LoginActivity::class.java)
             intent.putExtra("param","login")
             startActivity(intent)
         }
-
 
     }
 

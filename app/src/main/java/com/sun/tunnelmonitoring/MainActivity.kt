@@ -25,17 +25,17 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.navigation_home -> {
                 title="主页"
-                supportFragmentManager.inTransaction { replace(R.id.activity_fragment, HomeFragment.newInstance()) }
+                supportFragmentManager.inTransaction { replace(R.id.activity_fragment, HomeFragment.get()) }
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_monitor -> {
                 title="监控中心"
-                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,MonitorFragment.newInstance()) }
+                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,MonitorFragment.get()) }
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_usercenter -> {
                 title="用户中心"
-                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,UserCenterFragment.newInstance()) }
+                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,UserCenterFragment.get()) }
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        supportFragmentManager.inTransaction { add(R.id.activity_fragment, HomeFragment.newInstance()) }
+        supportFragmentManager.inTransaction { add(R.id.activity_fragment, HomeFragment.get()) }
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         title="主页"
         //getPermissions()
@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-
     }
 
     private fun getPermissions() {

@@ -1,11 +1,10 @@
 package com.sun.tunnelmonitoring.login
 
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -27,18 +26,14 @@ import android.os.Message
 import android.widget.Toast
 import com.google.gson.Gson
 import com.sun.tunnelmonitoring.MyApplication
-import com.sun.tunnelmonitoring.User
-import kotlinx.android.synthetic.main.fragment_login.view.*
+import com.sun.tunnelmonitoring.db.manager.User
+import kotlinx.android.synthetic.main.tree_item.*
 
 
 class LoginFragment : Fragment() {
-    private lateinit var sharedPref:SharedPreferences
-    private var editor: SharedPreferences.Editor? = null
     private var loginobject: JSONObject? = null
     private var loginjsonString: String? = null
-    private var response: String = ""
-    private var message=""
-    private val URL = "http://192.168.43.129:1234/user/applogin"
+    private val URL = "http://47.107.158.26:80/user/applogin"
     private var account=""
     private var password=""
 
@@ -82,10 +77,15 @@ class LoginFragment : Fragment() {
             et_password.setText(password)
             cb_remember_pass.isChecked = true
         }
-        bt_login!!.setOnClickListener{
+
+        cb_autologin.setOnCheckedChangeListener { buttonView, isChecked ->
+            cb_remember_pass.isChecked = isChecked
+        }
+        //登录
+        bt_login.setOnClickListener{
             postRequest(account,password)
         }
-
+        //注册
         bt_register.setOnClickListener {
             val intent=Intent(context,LoginActivity::class.java)
             intent.putExtra("param","register")
@@ -122,9 +122,12 @@ class LoginFragment : Fragment() {
                 //回调
                 response = client.newCall(request).execute()
                 if (response!!.isSuccessful) {
+                    val json=response.body().string().trim()
+                    Log.i("postRequest","获取到数据: $json")
                     //将服务器响应的参数response.body().string())发送到hanlder中，并更新ui
-                    handler.obtainMessage(1, response!!.body().string()).sendToTarget()
+                    handler.obtainMessage(1, json).sendToTarget()
                 } else {
+                    Log.e("postRequest","登录出错")
                     handler.post { Toast.makeText(context,"登录失败！！",Toast.LENGTH_SHORT).show() }
                     throw IOException("Unexpected code:" + response!!)
                 }
@@ -134,11 +137,12 @@ class LoginFragment : Fragment() {
         }.start()
     }
 
-    private val handler = object : Handler() {
+    private val handler = @SuppressLint("HandlerLeak")
+    object : Handler() {
         override fun handleMessage(msg: Message) {
-            if (msg.what === 1) {
+            if (msg.what == 1) {
                 val ReturnMessage = msg.obj as String
-                if (ReturnMessage == "100") {
+                if (ReturnMessage == "10") {
                     Toast.makeText(MyApplication.getContext(), "密码错误或账户未激活", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.i("xxxaccount", SharedPreferencesUtils.getaccount(context!!) + "")
@@ -153,7 +157,8 @@ class LoginFragment : Fragment() {
                         SharedPreferencesUtils.setpswd(password, context!!)
                         SharedPreferencesUtils.set_flag_rem(true, context!!)
                     }
-                    val userBean = Gson().fromJson(ReturnMessage, User::class.java)
+                    val user = Gson().fromJson(ReturnMessage, User::class.java)
+                    user.save()
                     val intent = Intent(context, MainActivity::class.java)
                     startActivity(intent)
                     activity!!.finish()//关闭页面

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.squareup.okhttp.*
+import com.sun.tunnelmonitoring.MyApplication
 
 import com.sun.tunnelmonitoring.R
 import kotlinx.android.synthetic.main.fragment_register.*
@@ -21,7 +22,20 @@ import java.net.URLDecoder
 class RegisterFragment : Fragment() {
     private var jsonObject: JSONObject? = null
     private var jsonString: String? = null
-    private val URL = "http://192.168.31.175:1234/user/applogin"
+    private val URL = "http://47.107.158.26:80/user/appregister"
+    var handler = Handler(Handler.Callback { msg ->
+        var m = msg.obj as String
+        try {
+            m = URLDecoder.decode(m, "utf-8")
+            val jsonObject = JSONObject(m)
+            val x = jsonObject.getString("statas")
+            Toast.makeText(MyApplication.getContext(), x, Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        false
+    })
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -32,7 +46,7 @@ class RegisterFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val handler = Handler(Handler.Callback { msg ->
+        /*val handler = Handler(Handler.Callback { msg ->
             var message = msg.obj as String
             try {
                 message = URLDecoder.decode(message, "utf-8")
@@ -42,7 +56,7 @@ class RegisterFragment : Fragment() {
             }
 
             false
-        })
+        })*/
 
         reg_et_register.setOnClickListener {
             Thread{
@@ -72,7 +86,7 @@ class RegisterFragment : Fragment() {
                 jsonString = jsonObject.toString()
                 val body = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), jsonString)
                 val request = Request.Builder()
-                        .url("http://192.168.43.129:1234/user/applogin")
+                        .url(URL)
                         .post(body)
                         .build()
                 val call = client.newCall(request)

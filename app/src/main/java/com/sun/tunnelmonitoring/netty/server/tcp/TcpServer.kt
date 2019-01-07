@@ -12,11 +12,11 @@ object TcpServer {
     private val HOST = "localhost"
     private val PORT = 3344
     private lateinit var b: ServerBootstrap
-    private var channel: Channel?=null
-    private var bossGroup:NioEventLoopGroup?=null
-    private var workGroup:NioEventLoopGroup?=null
+    private var channel: Channel? = null
+    private var bossGroup: NioEventLoopGroup? = null
+    private var workGroup: NioEventLoopGroup? = null
     private var flag = false
-    private val hander= Handler()
+    private val hander = Handler()
 
     fun start() {
         bossGroup = NioEventLoopGroup()
@@ -30,7 +30,13 @@ object TcpServer {
                     .option(ChannelOption.SO_RCVBUF, 1024 * 1024 * 30)
 
                 println("服务器已启动")
-                hander.post { Toast.makeText(MyApplication.getContext(), "启动服务器成功", Toast.LENGTH_SHORT).show() }
+                hander.post {
+                    Toast.makeText(
+                        MyApplication.getContext(),
+                        "启动服务器成功",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 val future = b.bind(PORT).sync().channel().closeFuture().await().sync()
                 if (future.isSuccess) {
                     channel = future.channel()
@@ -47,10 +53,9 @@ object TcpServer {
                             }
                         }, 2, TimeUnit.SECONDS)
                     }
-                    flag=false
+                    flag = false
                 }
             } catch (e: Exception) {
-                //e.printStackTrace()
                 println("连接客户端失败")
             } finally {
                 bossGroup!!.shutdownGracefully()
@@ -59,10 +64,13 @@ object TcpServer {
         }.start()
     }
 
-    fun close(){
-        if(bossGroup!=null)
+    fun close() {
+        try {
             bossGroup!!.shutdownGracefully().sync()
-        if(workGroup!=null)
             workGroup!!.shutdownGracefully().sync()
+            Toast.makeText(MyApplication.getContext(), "关闭服务器成功", Toast.LENGTH_SHORT).show()
+        }catch (e:Exception){
+            Toast.makeText(MyApplication.getContext(), "关闭服务器失败", Toast.LENGTH_SHORT).show()
+        }
     }
 }

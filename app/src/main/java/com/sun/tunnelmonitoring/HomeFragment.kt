@@ -2,6 +2,7 @@ package com.sun.tunnelmonitoring
 
 import UDPServer
 import UdpUtil
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -24,6 +25,8 @@ import org.greenrobot.eventbus.ThreadMode
 
 class HomeFragment : Fragment(), PrettyLogger {
     private lateinit var textview: TextView
+    private var serverStates=false
+    private var clientStates=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,21 +38,28 @@ class HomeFragment : Fragment(), PrettyLogger {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_home, container, false)
-        textview = view.findViewById(R.id.tv_rectext)
+
         return view
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            HomeFragment()
-    }
+   companion object {
+       @SuppressLint("StaticFieldLeak")
+       private var instance:HomeFragment?=null
+       get() {
+           if(field==null){
+               field= HomeFragment()
+           }
+           return field
+       }
+       @Synchronized
+       fun get():HomeFragment{
+           return instance!!
+       }
+   }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         /*send.setOnClickListener {
             var text = et_sendtext.text.toString()
             SessionManager.write(text)
@@ -78,8 +88,10 @@ class HomeFragment : Fragment(), PrettyLogger {
         sw_tcpserver.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
                 TcpServer.start()
+                serverStates=true
             }else{
                 TcpServer.close()
+                serverStates=false
             }
             tv_ap_address.text=""
         }
@@ -87,8 +99,12 @@ class HomeFragment : Fragment(), PrettyLogger {
         sw_tcpclient.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
                 TcpClient.start()
+                clientStates=true
+                tv_ap_address.text = wifiUtil.getAPAddress()
             }else{
                 TcpClient.close()
+                clientStates=false
+                tv_ap_address.text=""
             }
         }
 
@@ -102,13 +118,29 @@ class HomeFragment : Fragment(), PrettyLogger {
     @Subscribe(threadMode = ThreadMode.MAIN)
     //在UI线程中处理EventBus事件
     fun onUIUpdateEvent(messageEvent: MessageEvent) {
-        textview.append(messageEvent.message + "\n")
+        tv_rectext.append(messageEvent.message + "\n")
             view!!.invalidate()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("serverstates",serverStates)
+        outState.putBoolean("clientstates",clientStates)
+        Log.i("onLoadInstanceState","serverstates: $serverStates, clientstates: $clientStates")
+    }
+
+    private fun onLoadInstanceState(inState: Bundle){
+        serverStates= inState.getBoolean("serverstates",false)
+        clientStates= inState.getBoolean("clientstates",false)
+        Log.i("onLoadInstanceState","serverstates: $serverStates, clientstates: $clientStates")
+        sw_tcpserver.isChecked=serverStates
+        sw_tcpclient.isChecked=clientStates
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
         EventBus.getDefault().unregister(this)
+        Log.i("HomeFragment","destroy")
+        super.onDestroy()
     }
 
 }

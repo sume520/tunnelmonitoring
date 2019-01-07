@@ -1,6 +1,7 @@
 package com.sun.tunnelmonitoring
 
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -177,8 +178,17 @@ class MonitorFragment : Fragment() {
     }
 
     companion object {
-        @JvmStatic
-        fun newInstance() =
-            MonitorFragment()
+        @SuppressLint("StaticFieldLeak")
+        private var instance:MonitorFragment?=null
+            get() {
+                if(field==null){
+                    field= MonitorFragment()
+                }
+                return field
+            }
+        @Synchronized
+        fun get():MonitorFragment{
+            return instance!!
+        }
     }
 }
