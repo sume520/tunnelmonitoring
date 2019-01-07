@@ -49,43 +49,14 @@ class HomeFragment : Fragment(), PrettyLogger {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        /*radio_netprotocal.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId) {
-                R.id.tcpserver -> {
-                    //MinaUDPServerThread.closeServer()
-                    Log.d("HomeFragment", "选中tcp服务器")
-                    et_sendtext.isClickable = false
-                    //AP_TCPService.startActionOrd(this!!.context!!)
-                    MinaTCPServerThread.startTCPServer()
-                    tv_ap_address.text = ""
-                }
-                R.id.udpserver -> {
-                    //MinaTCPServerThread.closeServer()
-                    et_sendtext.isClickable = false
-                    UDPServer.start()
-                    tv_ap_address.text = ""
-                }
-                R.id.tcpclient -> {
-                    //setAPAddr()
-                    et_sendtext.isClickable = true
-                    MinaTCPClientThread.connect()
-                    tv_ap_address.text = wifiUtil.getAPAddress()
-                }
-                R.id.udpclient -> {
-                    et_sendtext.isClickable = true
-                    UdpUtil.start()
-                    tv_ap_address.text = wifiUtil.getAPAddress()
-                }
-            }
-        }*/
-/*
-        send.setOnClickListener {
+
+        /*send.setOnClickListener {
             var text = et_sendtext.text.toString()
             SessionManager.write(text)
             et_sendtext.text.clear()
-        }*/
-
-        sw_udpserver.setOnCheckedChangeListener { buttonView, isChecked ->
+        }
+*/
+       /* sw_udpserver.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked){//启动服务器
                 UDPServer.start()
             }else {//关闭服务器
@@ -103,7 +74,7 @@ class HomeFragment : Fragment(), PrettyLogger {
                 tv_ap_address.text=""
             }
         }
-
+*/
         sw_tcpserver.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
                 TcpServer.start()

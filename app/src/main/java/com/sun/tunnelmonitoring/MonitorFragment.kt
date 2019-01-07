@@ -29,8 +29,10 @@ class MonitorFragment : Fragment() {
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        //产生随机数据
+        generateValues()
+        //绘制折线图
         drawChart()
-
         bt_baseinform.setOnClickListener {
             activity!!.supportFragmentManager
                 .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
@@ -38,8 +40,16 @@ class MonitorFragment : Fragment() {
                 .commit()
         }
 
+        bt_live_measure.setOnClickListener {
+            activity!!.supportFragmentManager
+                    .beginTransaction().add(R.id.activity_fragment, LiveMeasureFragment.newInstance())
+                    .addToBackStack(null)
+                    .commit()
+        }
+
     }
 
+    //生成随机值
     private fun generateValues() {
         for (i in 0 until maxNumberOfLines) {
             for (j in 0 until numberOfPoints) {
@@ -54,8 +64,6 @@ class MonitorFragment : Fragment() {
         colors.add(0xFF66BB6A.toInt())
         colors.add(0xFF673AB7.toInt())
         colors.add(0xFFFFEB3B.toInt())
-        //产生随机数据
-        generateValues()
 
         for (i in 0 until maxNumberOfLines){
             val line = Line()
@@ -135,6 +143,7 @@ class MonitorFragment : Fragment() {
         mChartView.setCurrentViewportWithAnimation(v)
     }
 
+    //XY轴设置
     inner class AxisXY(){
         val axisX = Axis()
         val axisY = Axis()
