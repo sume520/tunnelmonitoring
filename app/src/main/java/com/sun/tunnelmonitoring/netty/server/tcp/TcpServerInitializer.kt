@@ -29,20 +29,13 @@ class TcpServerInitializer : ChannelInitializer<SocketChannel>() {
         override fun channelRead(ctx: ChannelHandlerContext?, msg: Any?) {
             super.channelRead(ctx, msg)
 
-          /*  var fileinfo = msg as FileInfo
-            var file = File("E:/${fileinfo.filename}")
-            if (!file.exists()) file.createNewFile()
-            file.writeBytes(fileinfo.filedata)
-            println("接收数据完成")
-            println(fileinfo.toString())
-            EventBus.getDefault().post(MessageEvent(fileinfo.toString()))*/
             var bytes=msg as ByteArray
             var filepath= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + "rec.txt"
             val file=File(filepath)
             if(!file.exists()) file.createNewFile()
             file.writeBytes(bytes)
             println("接收数据完成")
-            EventBus.getDefault().post(MessageEvent("接收到数据，大小为：${bytes.size/1024}KB"))
+            EventBus.getDefault().post(MessageEvent("接收到数据，大小为：${bytes.size/1024}KB\n已保存为文件rec.txt\n保存路径：$filepath"))
         }
     }
 

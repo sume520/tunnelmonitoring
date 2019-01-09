@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.navigation_usercenter -> {
                 title="用户中心"
-                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,UserCenterFragment.get()) }
+                supportFragmentManager.inTransaction { replace(R.id.activity_fragment,UserCenterFragment()) }
                 return@OnNavigationItemSelectedListener true
             }
         }

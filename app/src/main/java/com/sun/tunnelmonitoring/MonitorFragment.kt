@@ -17,10 +17,19 @@ import java.security.SecureRandom
 
 
 class MonitorFragment : Fragment() {
-    private var lines=ArrayList<Line>()
     private val maxNumberOfLines = 4
     private val numberOfPoints = 20
     private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
+
+    init {
+        //产生随机数据
+        generateValues()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +40,7 @@ class MonitorFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //产生随机数据
-        generateValues()
+        //generateValues()
         //绘制折线图
         drawChart()
         bt_baseinform.setOnClickListener {
@@ -60,6 +69,8 @@ class MonitorFragment : Fragment() {
     }
 
     private fun drawChart() {
+        val lines=ArrayList<Line>()
+
         val colors=ArrayList<Int>()
         colors.add(0xFF2196F3.toInt())
         colors.add(0xFF66BB6A.toInt())

@@ -27,6 +27,7 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.db.manager.User
+import com.sun.tunnelmonitoring.db.manager.UserDao
 import kotlinx.android.synthetic.main.tree_item.*
 
 
@@ -51,8 +52,6 @@ class LoginFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        account=et_account.text.toString().trim()
-        password=et_password.text.toString().trim()
 
         //设置密码是否可见
         tb_show_hide_pass.setOnCheckedChangeListener{ compoundButton, isChecked ->
@@ -83,6 +82,9 @@ class LoginFragment : Fragment() {
         }
         //登录
         bt_login.setOnClickListener{
+            account=et_account.text.toString().trim()
+            password=et_password.text.toString().trim()
+            Log.i("login","account: $account, password: $password")
             postRequest(account,password)
         }
         //注册
@@ -158,7 +160,10 @@ class LoginFragment : Fragment() {
                         SharedPreferencesUtils.set_flag_rem(true, context!!)
                     }
                     val user = Gson().fromJson(ReturnMessage, User::class.java)
-                    user.save()
+                    if(UserDao.queryById(1)!=null)
+                        user.update(1)
+                    else
+                        user.save()
                     val intent = Intent(context, MainActivity::class.java)
                     startActivity(intent)
                     activity!!.finish()//关闭页面

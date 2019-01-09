@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,8 +48,9 @@ class UserCenterFragment : Fragment() {
         var user=UserDao.queryById(1)
         if(user!=null) {
             tv_username.text = user.username
+            Log.i("UserCenterFragmenet","${user.username}")
         }else{
-            tv_username.text="用户"
+            tv_username.text="登录"
         }
 
         tv_username.setOnClickListener {
@@ -57,6 +59,10 @@ class UserCenterFragment : Fragment() {
             startActivity(intent)
         }
 
+        bt_logout.setOnClickListener {
+            UserDao.deleteAll()
+            tv_username.text="登录"
+        }
     }
 
 }
