@@ -12,10 +12,9 @@
             android:title="监控中心"/>
 
     <item
-            android:id="@+id/navigation_usercenter"
+            android:id="@+id/navigation_sysconfig"
             android:icon="@drawable/ic_dashboard_black_24dp"
-            android:title="用户中心"/>
-
+            android:title="系统配置"/>
 
 
 </menu>

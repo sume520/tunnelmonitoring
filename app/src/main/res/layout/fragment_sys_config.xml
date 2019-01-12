@@ -4,36 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".UserCenterFragment">
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="系统配置"
-        android:textColor="#53be81"
-        android:textSize="20dp" />
+    tools:context=".SysConfigFragment">
 
     <Button
         android:id="@+id/bt_warn_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="#58D68D"
+        android:layout_margin="16dp"
+        android:textColor="#FFFFFF"
         android:text="警报限值设定" />
 
     <Button
         android:id="@+id/bt_base_axis_manager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="#58D68D"
+        android:layout_margin="16dp"
+        android:textColor="#FFFFFF"
         android:text="基准坐标管理" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="#58D68D"
+        android:layout_margin="16dp"
+        android:textColor="#FFFFFF"
         android:text="测杆基准标定" />
 
     <Button

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
@@ -40,12 +39,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.navigation_usercenter -> {
-                    title = "用户中心"
+                R.id.navigation_sysconfig -> {
+                    title = "系统配置"
                     supportFragmentManager.inTransaction {
                         replace(
                             R.id.activity_fragment,
-                            UserCenterFragment()
+                            SysConfigFragment()
                         )
                     }
                     return@OnNavigationItemSelectedListener true
