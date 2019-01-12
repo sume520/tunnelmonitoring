@@ -23,7 +23,7 @@ class MonitorFragment : Fragment() {
 
     init {
         //产生随机数据
-        generateValues()
+        //generateValues()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +42,7 @@ class MonitorFragment : Fragment() {
         //产生随机数据
         //generateValues()
         //绘制折线图
-        drawChart()
-        bt_baseinform.setOnClickListener {
-            activity!!.supportFragmentManager
-                .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
-                .addToBackStack(null)
-                .commit()
-        }
+        //drawChart()
 
         bt_live_measure.setOnClickListener {
             activity!!.supportFragmentManager
@@ -68,7 +62,7 @@ class MonitorFragment : Fragment() {
         }
     }
 
-    private fun drawChart() {
+    /*private fun drawChart() {
         val lines=ArrayList<Line>()
 
         val colors=ArrayList<Int>()
@@ -186,7 +180,7 @@ class MonitorFragment : Fragment() {
                 axisY.values=axisYValues
             }
         }
-    }
+    }*/
 
     companion object {
         @SuppressLint("StaticFieldLeak")

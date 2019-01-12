@@ -1,8 +1,7 @@
-package com.sun.tunnelmonitoring.login
+package com.sun.tunnelmonitoring
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.BadParcelableException
 
 
 object SharedPreferencesUtils {
@@ -10,8 +9,19 @@ object SharedPreferencesUtils {
         return context.getSharedPreferences("Login", Context.MODE_PRIVATE)
     }
 
+    fun getLoginStatus(context: Context):Boolean{
+        return share(context)
+            .getBoolean("login",false)
+    }
+
+    fun setLoginStatus(isLogin:Boolean,context: Context){
+        val edit=share(context).edit()
+        edit.putBoolean("login",isLogin).apply()
+    }
+
     fun getaccount(context: Context): String? {
-        return share(context).getString("account", null)
+        return share(context)
+            .getString("account", null)
     }
 
     fun setaccount(account: String, context: Context) {
@@ -21,7 +31,8 @@ object SharedPreferencesUtils {
     }
 
     fun getpswd(context: Context): String? {
-        return share(context).getString("password", null)
+        return share(context)
+            .getString("password", null)
     }
 
     fun setpswd(pswd: String, context: Context) {
@@ -31,7 +42,8 @@ object SharedPreferencesUtils {
     }
 
     fun get_flag_rem(context: Context): Boolean {
-        return share(context).getBoolean("flag_rem", false)
+        return share(context)
+            .getBoolean("flag_rem", false)
     }
 
     fun set_flag_rem(flag_rem: Boolean?, context: Context) {
@@ -41,7 +53,8 @@ object SharedPreferencesUtils {
     }
 
     fun get_flag_auto(context: Context): Boolean {
-        return share(context).getBoolean("flag_auto", false)
+        return share(context)
+            .getBoolean("flag_auto", false)
     }
 
     fun set_flag_auto(flag_auto: Boolean?, context: Context) {

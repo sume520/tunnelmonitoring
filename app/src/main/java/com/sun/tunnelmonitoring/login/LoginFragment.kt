@@ -26,9 +26,9 @@ import android.os.Message
 import android.widget.Toast
 import com.google.gson.Gson
 import com.sun.tunnelmonitoring.MyApplication
+import com.sun.tunnelmonitoring.SharedPreferencesUtils
 import com.sun.tunnelmonitoring.db.manager.User
 import com.sun.tunnelmonitoring.db.manager.UserDao
-import kotlinx.android.synthetic.main.tree_item.*
 
 
 class LoginFragment : Fragment() {
@@ -165,6 +165,7 @@ class LoginFragment : Fragment() {
                     else
                         user.save()
                     val intent = Intent(context, MainActivity::class.java)
+                    intent.putExtra("logined",true)
                     startActivity(intent)
                     activity!!.finish()//关闭页面
                 }
