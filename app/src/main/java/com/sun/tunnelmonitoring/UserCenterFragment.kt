@@ -45,23 +45,12 @@ class UserCenterFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        var user=UserDao.queryById(1)
-        if(user!=null) {
-            tv_username.text = user.username
-            Log.i("UserCenterFragmenet","${user.username}")
-        }else{
-            tv_username.text="登录"
-        }
-
-        tv_username.setOnClickListener {
-            val intent= Intent(activity,LoginActivity::class.java)
-            intent.putExtra("param","login")
-            startActivity(intent)
-        }
 
         bt_logout.setOnClickListener {
-            UserDao.deleteAll()
-            tv_username.text="登录"
+            SharedPreferencesUtils.setLoginStatus(false,MyApplication.getContext())
+            val intent =Intent(activity,LoginActivity::class.java)
+            startActivity(intent)
+            activity!!.finish()
         }
     }
 

@@ -37,6 +37,7 @@ class LoginFragment : Fragment() {
     private val URL = "http://47.107.158.26:80/user/applogin"
     private var account=""
     private var password=""
+    private val ctx=MyApplication.getContext()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -52,6 +53,9 @@ class LoginFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        activity!!.title="登录"
+        cb_autologin.isChecked=false
+        SharedPreferencesUtils.set_flag_auto(false,ctx)
 
         //设置密码是否可见
         tb_show_hide_pass.setOnCheckedChangeListener{ compoundButton, isChecked ->
@@ -61,25 +65,28 @@ class LoginFragment : Fragment() {
                 et_password.transformationMethod = HideReturnsTransformationMethod.getInstance()
             }
         }
-        //var context=activity!!.applicationContext
+
         //判断是否自动登录
-        if (SharedPreferencesUtils.get_flag_auto(context!!)) {
-            val account = SharedPreferencesUtils.getaccount(context!!)
-            val password = SharedPreferencesUtils.getpswd(context!!)
+        if (SharedPreferencesUtils.get_flag_auto(ctx)) {
+            val account = SharedPreferencesUtils.getaccount(ctx)
+            val password = SharedPreferencesUtils.getpswd(ctx)
             postRequest(account!!, password!!)
         }
+
+        //勾选自动登录自动勾选记住密码
+        cb_autologin.setOnCheckedChangeListener { buttonView, isChecked ->
+            cb_remember_pass.isChecked = isChecked
+        }
+
         //判断是否记住密码
-        if (SharedPreferencesUtils.get_flag_rem(context!!)) {
-            val account = SharedPreferencesUtils.getaccount(context!!)
-            val password = SharedPreferencesUtils.getpswd(context!!)
+        if (SharedPreferencesUtils.get_flag_rem(ctx)) {
+            val account = SharedPreferencesUtils.getaccount(ctx)
+            val password = SharedPreferencesUtils.getpswd(ctx)
             et_account.setText(account)
             et_password.setText(password)
             cb_remember_pass.isChecked = true
         }
 
-        cb_autologin.setOnCheckedChangeListener { buttonView, isChecked ->
-            cb_remember_pass.isChecked = isChecked
-        }
         //登录
         bt_login.setOnClickListener{
             account=et_account.text.toString().trim()
@@ -89,9 +96,11 @@ class LoginFragment : Fragment() {
         }
         //注册
         bt_register.setOnClickListener {
-            val intent=Intent(context,LoginActivity::class.java)
-            intent.putExtra("param","register")
-            startActivity(intent)
+            activity!!.supportFragmentManager
+                .beginTransaction().add(R.id.loginacivity_fragment, RegisterFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+
         }
 
     }
@@ -147,25 +156,22 @@ class LoginFragment : Fragment() {
                 if (ReturnMessage == "10") {
                     Toast.makeText(MyApplication.getContext(), "密码错误或账户未激活", Toast.LENGTH_SHORT).show()
                 } else {
-                    Log.i("xxxaccount", SharedPreferencesUtils.getaccount(context!!) + "")
+                    Log.i("xxxaccount", SharedPreferencesUtils.getaccount(ctx) + "")
                     if (cb_autologin.isChecked()) {
-                        SharedPreferencesUtils.set_flag_auto(true, context!!)
+                        SharedPreferencesUtils.set_flag_auto(true, ctx)
                     } else {
-                        SharedPreferencesUtils.set_flag_auto(false, context!!)
+                        SharedPreferencesUtils.set_flag_auto(false,ctx)
                     }
                     //保存账号密码
                     if (cb_remember_pass.isChecked()) {
-                        SharedPreferencesUtils.setaccount(account, context!!)
-                        SharedPreferencesUtils.setpswd(password, context!!)
-                        SharedPreferencesUtils.set_flag_rem(true, context!!)
+                        SharedPreferencesUtils.setaccount(account, ctx)
+                        SharedPreferencesUtils.setpswd(password, ctx)
+                        SharedPreferencesUtils.set_flag_rem(true, ctx)
                     }
                     val user = Gson().fromJson(ReturnMessage, User::class.java)
-                    if(UserDao.queryById(1)!=null)
-                        user.update(1)
-                    else
-                        user.save()
+
+                    SharedPreferencesUtils.setLoginStatus(true,ctx)
                     val intent = Intent(context, MainActivity::class.java)
-                    intent.putExtra("logined",true)
                     startActivity(intent)
                     activity!!.finish()//关闭页面
                 }

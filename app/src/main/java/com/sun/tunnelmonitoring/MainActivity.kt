@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        Log.i("MainActivity","oncreate")
         supportFragmentManager.inTransaction { add(R.id.activity_fragment, HomeFragment.get()) }
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         title = "主页"

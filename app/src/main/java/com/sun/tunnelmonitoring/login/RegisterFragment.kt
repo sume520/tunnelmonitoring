@@ -1,6 +1,7 @@
 package com.sun.tunnelmonitoring.login
 
 
+import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -13,6 +14,7 @@ import com.squareup.okhttp.*
 import com.sun.tunnelmonitoring.MyApplication
 
 import com.sun.tunnelmonitoring.R
+import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -45,18 +47,7 @@ class RegisterFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        /*val handler = Handler(Handler.Callback { msg ->
-            var message = msg.obj as String
-            try {
-                message = URLDecoder.decode(message, "utf-8")
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            false
-        })*/
+        activity!!.title="注册"
 
         reg_et_register.setOnClickListener {
             Thread{
@@ -109,5 +100,10 @@ class RegisterFragment : Fragment() {
         @JvmStatic
         fun newInstance() =
                 RegisterFragment()
+    }
+
+    override fun onDestroy() {
+        activity!!.title="登录"
+        super.onDestroy()
     }
 }

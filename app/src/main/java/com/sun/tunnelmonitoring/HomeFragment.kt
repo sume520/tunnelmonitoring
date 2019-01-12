@@ -67,34 +67,6 @@ class HomeFragment : Fragment(), PrettyLogger {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        /*
-         sw_tcpserver.setOnCheckedChangeListener { buttonView, isChecked ->
-             if(isChecked){
-                 TcpServer.start()
-                 serverStates=true
-             }else{
-                 TcpServer.close()
-                 serverStates=false
-             }
-             tv_ap_address.text=""
-         }
-
-         sw_tcpclient.setOnCheckedChangeListener { buttonView, isChecked ->
-             if(isChecked){
-                 TcpClient.start()
-                 clientStates=true
-                 tv_ap_address.text = wifiUtil.getAPAddress()
-             }else{
-                 TcpClient.close()
-                 clientStates=false
-                 tv_ap_address.text=""
-             }
-         }
-
-         bt_sendfile.setOnClickListener {
-             var filename = "tunneldata.txt"
-             TcpClient.sendFile(filename)
-         }*/
         //绘制折线图
         drawChart()
         bt_baseinform.setOnClickListener {
