@@ -50,4 +50,9 @@ dependencies {
     implementation 'android.arch.navigation:navigation-ui:1.0.0-alpha09'
     implementation 'com.squareup.okhttp:okhttp:2.4.0'
     implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.litepal.android:kotlin:3.0.0'
+
+
 }

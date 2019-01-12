@@ -26,29 +26,20 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+
+        <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ClientActivity"></activity>
-        <activity android:name=".ServerActivity"></activity>
-
-        <service
-            android:name=".AP_TCPService"
-            android:exported="false"></service>
-
-        <receiver
-            android:name=".MainActivity$SocketReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter android:priority="100">
-                <action android:name="com.sun.tunnelmcom.sun.tunnelmonitoring.LOCAL_BROADCAST" />
-            </intent-filter>
-        </receiver>
-
-        <activity android:name=".login.LoginActivity"></activity>
     </application>
 
 </manifest>

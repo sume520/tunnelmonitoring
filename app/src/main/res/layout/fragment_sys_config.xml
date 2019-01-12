@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SysConfigFragment">
+
+    <Button
+        android:id="@+id/bt_warn_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#58D68D"
+        android:layout_margin="16dp"
+        android:textColor="#FFFFFF"
+        android:text="警报限值设定" />
+
+    <Button
+        android:id="@+id/bt_base_axis_manager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#58D68D"
+        android:layout_margin="16dp"
+        android:textColor="#FFFFFF"
+        android:text="基准坐标管理" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#58D68D"
+        android:layout_margin="16dp"
+        android:textColor="#FFFFFF"
+        android:text="测杆基准标定" />
+
+    <Button
+        android:id="@+id/bt_logout"
+        android:background="#f13f12"
+        android:layout_marginTop="50dp"
+        android:layout_marginHorizontal="40dp"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="注销"/>
+
+
+</LinearLayout>

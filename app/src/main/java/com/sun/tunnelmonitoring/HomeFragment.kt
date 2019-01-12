@@ -1,7 +1,7 @@
 package com.sun.tunnelmonitoring
 
-import UDPServer
-import UdpUtil
+import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -9,19 +9,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.sun.tunnelmonitoring.MinaUtil.SessionManager
-import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPClientThread
-import com.sun.tunnelmonitoring.MinaUtil.TCP.MinaTCPServerThread
-import com.sun.tunnelmonitoring.MinaUtil.wifiUtil
+import com.sun.tunnelmonitoring.tree.TreeFragment
 import com.threshold.logger.PrettyLogger
 import kotlinx.android.synthetic.main.fragment_home.*
+import lecho.lib.hellocharts.gesture.ContainerScrollType
+import lecho.lib.hellocharts.gesture.ZoomType
+import lecho.lib.hellocharts.model.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.security.SecureRandom
 
 
 class HomeFragment : Fragment(), PrettyLogger {
     private lateinit var textview: TextView
+    private var serverStates = false
+    private var clientStates = false
+    private val maxNumberOfLines = 4
+    private val numberOfPoints = 20
+    private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
+
+    init {
+        //产生随机数据
+        generateValues()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,77 +44,182 @@ class HomeFragment : Fragment(), PrettyLogger {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_home, container, false)
-        textview = view.findViewById(R.id.tv_rectext)
+
         return view
     }
 
     companion object {
-        @JvmStatic
-        fun newInstance() =
-            HomeFragment()
+        @SuppressLint("StaticFieldLeak")
+        private var instance: HomeFragment? = null
+            get() {
+                if (field == null) {
+                    field = HomeFragment()
+                }
+                return field
+            }
+
+        @Synchronized
+        fun get(): HomeFragment {
+            return instance!!
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        radio_netprotocal.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId) {
-                R.id.tcpserver -> {
-                    //MinaUDPServerThread.closeServer()
-                    Log.d("HomeFragment", "选中tcp服务器")
-                    et_sendtext.isClickable = false
-                    //AP_TCPService.startActionOrd(this!!.context!!)
-                    MinaTCPServerThread.startTCPServer()
-                    tv_ap_address.text = ""
-                }
-                R.id.udpserver -> {
-                    //MinaTCPServerThread.closeServer()
-                    et_sendtext.isClickable = false
-                    UDPServer.start()
-                    tv_ap_address.text = ""
-                }
-                R.id.tcpclient -> {
-                    //setAPAddr()
-                    et_sendtext.isClickable = true
-                    MinaTCPClientThread.connect()
-                    tv_ap_address.text = wifiUtil.getAPAddress()
-                }
-                R.id.udpclient -> {
-                    et_sendtext.isClickable = true
-                    UdpUtil.start()
-                    tv_ap_address.text = wifiUtil.getAPAddress()
-                }
-            }
-        }
-
-        send.setOnClickListener {
-            var text = et_sendtext.text.toString()
-            SessionManager.write(text)
-            et_sendtext.text.clear()
-        }
-
-        bt_sendfile.setOnClickListener {
-            //var filename = "tunneldata.txt"
-            var filename = "tunneldata.txt"
-            UdpUtil.write(filename)
-        }
-
-        bt_senddata.setOnClickListener {
-            UdpUtil.write("01 07 24 15 08 04 12 34 00 10 05 DC 00 5F 5A BA 00 00 D2 B8 01 F9 01 EA 2B 56 27 0F 0B 0B 00 C8 64 38 34 45 00 07 00 01 0F FF 0E A9")
+        //绘制折线图
+        drawChart()
+        bt_baseinform.setOnClickListener {
+            activity!!.supportFragmentManager
+                .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     //在UI线程中处理EventBus事件
     fun onUIUpdateEvent(messageEvent: MessageEvent) {
-        textview.append(messageEvent.message + "\n")
-        view!!.invalidate()
     }
 
+
     override fun onDestroy() {
-        super.onDestroy()
         EventBus.getDefault().unregister(this)
+        Log.i("HomeFragment", "destroy")
+        super.onDestroy()
+    }
+
+    //生成随机值
+    private fun generateValues() {
+        for (i in 0 until maxNumberOfLines) {
+            for (j in 0 until numberOfPoints) {
+                randomNumbersTab[i][j] = SecureRandom().nextInt(90).toFloat()
+            }
+        }
+    }
+
+    private fun drawChart() {
+        val lines = ArrayList<Line>()
+
+        val colors = ArrayList<Int>()
+        colors.add(0xFF2196F3.toInt())
+        colors.add(0xFF66BB6A.toInt())
+        colors.add(0xFF673AB7.toInt())
+        colors.add(0xFFFFEB3B.toInt())
+
+        for (i in 0 until maxNumberOfLines) {
+            val line = Line()
+            val values = ArrayList<PointValue>()
+            for (j in 0 until numberOfPoints) {
+                values.add(PointValue(j.toFloat(), randomNumbersTab[i][j]))
+            }
+            line.values = values
+            line.color = colors[i]
+            line.isCubic = true
+            line.isFilled = true
+            line.setHasPoints(false)
+            lines.add(line)
+        }
+
+        //图表属性设置
+        mChartView.isInteractive = true//设置图表是可以交互的（拖拽，缩放等效果的前提）
+        mChartView.zoomType = ZoomType.HORIZONTAL//设置缩放方向
+        mChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL)
+
+        //坐标轴设置
+        val axisXY = AxisXY()
+        val axisX = axisXY.axisX//x轴
+        val axisY = axisXY.axisY//y轴
+        val xLabels = ArrayList<String>()
+        xLabels.add("10:00")
+        xLabels.add("10:20")
+        xLabels.add("10:40")
+        xLabels.add("11:00")
+        xLabels.add("11:20")
+        xLabels.add("11:40")
+        xLabels.add("12:00")
+        xLabels.add("12:20")
+        xLabels.add("12:40")
+        xLabels.add("13:00")
+        xLabels.add("13:20")
+        xLabels.add("13:40")
+        xLabels.add("14:00")
+        xLabels.add("14:20")
+        xLabels.add("14:40")
+        xLabels.add("15:00")
+        xLabels.add("15:20")
+        xLabels.add("15:40")
+        xLabels.add("16:00")
+        xLabels.add("16:20")
+        axisXY.setAxisLabels(xLabels)
+
+        axisX.typeface = Typeface.MONOSPACE
+        axisY.typeface = Typeface.MONOSPACE
+        axisX.textColor = 0xFF00897B.toInt()
+        axisY.textColor = 0xFF00897B.toInt()
+        axisY.setHasLines(true)
+        axisX.maxLabelChars = 5
+        axisX.name = "时间"
+        axisX.setHasTiltedLabels(true)
+        axisY.name = "温度℃"
+
+        //图标数据设置
+        val data = LineChartData()
+        data.axisXBottom = axisX
+        data.axisYLeft = axisY
+        data.lines = lines  //设置图表折线
+        data.baseValue = Float.NEGATIVE_INFINITY
+        mChartView.lineChartData = data//给图表填充数据
+
+
+        //设置X、Y轴范围
+        val maxViewPoint = Viewport(mChartView.maximumViewport)
+        val v = Viewport()
+        v.bottom = 0f
+        v.top = 100f
+        v.left = 0f
+        v.right = 10f
+        maxViewPoint.top = 100f
+        maxViewPoint.right = numberOfPoints.toFloat() + 0.1f
+        mChartView.maximumViewport = maxViewPoint
+        mChartView.setCurrentViewportWithAnimation(v)
+    }
+
+    //XY轴设置
+    inner class AxisXY() {
+        val axisX = Axis()
+        val axisY = Axis()
+
+        fun setAxisValues(
+            xValues: ArrayList<AxisValue>? = null,
+            yValues: ArrayList<AxisValue>? = null
+        ) {
+            if (xValues != null) {
+                axisX.values = xValues
+            }
+            if (yValues != null) {
+                axisY.values = yValues
+            }
+        }
+
+        fun setAxisLabels(xLabels: ArrayList<String>? = null, yLabels: ArrayList<String>? = null) {
+            val axisXValues = ArrayList<AxisValue>()
+            val axisYValues = ArrayList<AxisValue>()
+            if (xLabels != null) {
+                val xlabels_num = xLabels.size
+                for (i in 0 until xlabels_num) {
+                    axisXValues.add(AxisValue(i.toFloat()).setLabel(xLabels[i]))
+                }
+                axisX.values = axisXValues
+            }
+            if (yLabels != null) {
+                val ylabels_num = yLabels.size
+                for (i in 0 until ylabels_num) {
+                    axisYValues.add(AxisValue(i.toFloat()).setLabel(yLabels[i]))
+                }
+                axisY.values = axisYValues
+            }
+        }
     }
 
 }

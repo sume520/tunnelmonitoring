@@ -1,14 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".MonitorFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MonitorFragment">
 
-    <lecho.lib.hellocharts.view.LineChartView
-            android:id="@+id/mChartView"
-            android:padding="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"/>
+    <Button
+        android:id="@+id/bt_live_measure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="#58D68D"
+        android:text="现场测量"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/tv_warn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="警报信息"
+        android:layout_below="@+id/bt_live_measure"
+        android:textColor="#75000000"
+        android:textSize="16dp" />
+
+    <LinearLayout
+        android:id="@+id/ll_warnning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_warn"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_data_warnning"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_weight="5"
+            android:background="#58D68D"
+            android:text="数据警报"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/bt_data_transfer_warnning"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_weight="5"
+            android:background="#58D68D"
+            android:text="数据传输警报"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp" />
+    </LinearLayout>
 
 </RelativeLayout>
