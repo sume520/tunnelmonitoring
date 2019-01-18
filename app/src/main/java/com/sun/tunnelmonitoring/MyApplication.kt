@@ -13,6 +13,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this.applicationContext
+        //初始化litepal
         LitePal.initialize(context!!)
     }
 }

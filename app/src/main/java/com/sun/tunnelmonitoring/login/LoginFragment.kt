@@ -14,13 +14,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.squareup.okhttp.*
 import com.sun.tunnelmonitoring.MainActivity
-
 import com.sun.tunnelmonitoring.R
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-
 import com.squareup.okhttp.RequestBody
 import android.os.Message
 import android.widget.Toast
@@ -58,7 +56,7 @@ class LoginFragment : Fragment() {
         SharedPreferencesUtils.set_flag_auto(false,ctx)
 
         //设置密码是否可见
-        tb_show_hide_pass.setOnCheckedChangeListener{ compoundButton, isChecked ->
+        tb_show_hide_pass.setOnCheckedChangeListener{ _, isChecked ->
             if (isChecked) {
                 et_password.transformationMethod = PasswordTransformationMethod.getInstance()
             } else {
@@ -74,7 +72,7 @@ class LoginFragment : Fragment() {
         }
 
         //勾选自动登录自动勾选记住密码
-        cb_autologin.setOnCheckedChangeListener { buttonView, isChecked ->
+        cb_autologin.setOnCheckedChangeListener { _, isChecked ->
             cb_remember_pass.isChecked = isChecked
         }
 
@@ -128,11 +126,11 @@ class LoginFragment : Fragment() {
                 .build()
         //新建一个线程，用于得到服务器响应的参数
         Thread {
-            var response: Response? = null
+            var response: Response
             try {
                 //回调
                 response = client.newCall(request).execute()
-                if (response!!.isSuccessful) {
+                if (response.isSuccessful) {
                     val json=response.body().string().trim()
                     Log.i("postRequest","获取到数据: $json")
                     //将服务器响应的参数response.body().string())发送到hanlder中，并更新ui
@@ -140,7 +138,7 @@ class LoginFragment : Fragment() {
                 } else {
                     Log.e("postRequest","登录出错")
                     handler.post { Toast.makeText(context,"登录失败！！",Toast.LENGTH_SHORT).show() }
-                    throw IOException("Unexpected code:" + response!!)
+                    throw IOException("Unexpected code:" + response)
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -168,7 +166,6 @@ class LoginFragment : Fragment() {
                         SharedPreferencesUtils.setpswd(password, ctx)
                         SharedPreferencesUtils.set_flag_rem(true, ctx)
                     }
-                    val user = Gson().fromJson(ReturnMessage, User::class.java)
 
                     SharedPreferencesUtils.setLoginStatus(true,ctx)
                     val intent = Intent(context, MainActivity::class.java)

@@ -8,7 +8,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.TextView
+import com.sun.tunnelmonitoring.db.manager.Temperature
 import com.sun.tunnelmonitoring.tree.TreeFragment
 import com.threshold.logger.PrettyLogger
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -18,16 +20,22 @@ import lecho.lib.hellocharts.model.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.litepal.LitePal
+import org.litepal.extension.findAll
 import java.security.SecureRandom
 
 
 class HomeFragment : Fragment(), PrettyLogger {
-    private lateinit var textview: TextView
-    private var serverStates = false
-    private var clientStates = false
-    private val maxNumberOfLines = 4
-    private val numberOfPoints = 20
+    private var maxNumberOfLines = 0
+    private var numberOfPoints = 0
     private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
+    private var sensorType:String?=null
+    private var unitSignal:String?=null
+    private var values:ArrayList<PointValue>?=null
+    private var xLabels:ArrayList<String>?=null
+    private var axisXname:String?=null
+    private var axisYname:String?=null
+    private val lines = ArrayList<Line>()
 
     init {
         //产生随机数据
@@ -50,6 +58,8 @@ class HomeFragment : Fragment(), PrettyLogger {
     }
 
     companion object {
+        var count=0
+
         @SuppressLint("StaticFieldLeak")
         private var instance: HomeFragment? = null
             get() {
@@ -68,13 +78,19 @@ class HomeFragment : Fragment(), PrettyLogger {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //绘制折线图
-        drawChart()
+        //drawChart()
+        selectSersor("温度计")
         bt_baseinform.setOnClickListener {
             activity!!.supportFragmentManager
                 .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }
+
+        var adapter=ArrayAdapter.createFromResource(activity,
+                R.array.sensor_array,android.R.layout.simple_spinner_item)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spin_sensor.adapter=adapter
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -85,7 +101,6 @@ class HomeFragment : Fragment(), PrettyLogger {
 
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
-        Log.i("HomeFragment", "destroy")
         super.onDestroy()
     }
 
@@ -98,28 +113,55 @@ class HomeFragment : Fragment(), PrettyLogger {
         }
     }
 
-    private fun drawChart() {
-        val lines = ArrayList<Line>()
+    private fun selectSersor(sensor:String){
 
-        val colors = ArrayList<Int>()
-        colors.add(0xFF2196F3.toInt())
-        colors.add(0xFF66BB6A.toInt())
-        colors.add(0xFF673AB7.toInt())
-        colors.add(0xFFFFEB3B.toInt())
+        val colors =
+            arrayOf(0xFF2196F3.toInt(),0xFF66BB6A.toInt(),0xFF673AB7.toInt(),0xFFFFEB3B.toInt())
 
-        for (i in 0 until maxNumberOfLines) {
-            val line = Line()
-            val values = ArrayList<PointValue>()
-            for (j in 0 until numberOfPoints) {
-                values.add(PointValue(j.toFloat(), randomNumbersTab[i][j]))
+        values= ArrayList()
+
+        when(sensor){
+            "温度计"->{
+                maxNumberOfLines=1
+                //从数据库获取数据
+                val temps = LitePal.findAll<Temperature>()
+                numberOfPoints = temps.size
+                //填充的数据
+                values!!.clear()
+                for (i in 0 until maxNumberOfLines) {
+                    val line = Line()
+                    val values = ArrayList<PointValue>()
+                    for (j in 0 until numberOfPoints) {
+                        values.add(PointValue(j.toFloat(), temps[j].temp.toFloat()))
+                    }
+                    line.values = values
+                    line.color = colors[i]
+                    line.isCubic = true
+                    line.isFilled = true
+                    line.setHasPoints(false)
+                    lines.add(line)
+                }
+                //x轴标签
+                xLabels= ArrayList()
+                for (i in 0 until numberOfPoints) {
+                    var str: String
+                    if (temps[i].time == "12:00")
+                        str = temps[i].date.substring(5)
+                    else
+                        str = temps[i].time
+                    xLabels!!.add(str)
+                }
+                //XY坐标名称
+                axisXname="时间"
+                axisXname="温度℃"
             }
-            line.values = values
-            line.color = colors[i]
-            line.isCubic = true
-            line.isFilled = true
-            line.setHasPoints(false)
-            lines.add(line)
         }
+
+        //绘制图表
+        drawChart()
+    }
+
+    private fun drawChart() {
 
         //图表属性设置
         mChartView.isInteractive = true//设置图表是可以交互的（拖拽，缩放等效果的前提）
@@ -130,27 +172,6 @@ class HomeFragment : Fragment(), PrettyLogger {
         val axisXY = AxisXY()
         val axisX = axisXY.axisX//x轴
         val axisY = axisXY.axisY//y轴
-        val xLabels = ArrayList<String>()
-        xLabels.add("10:00")
-        xLabels.add("10:20")
-        xLabels.add("10:40")
-        xLabels.add("11:00")
-        xLabels.add("11:20")
-        xLabels.add("11:40")
-        xLabels.add("12:00")
-        xLabels.add("12:20")
-        xLabels.add("12:40")
-        xLabels.add("13:00")
-        xLabels.add("13:20")
-        xLabels.add("13:40")
-        xLabels.add("14:00")
-        xLabels.add("14:20")
-        xLabels.add("14:40")
-        xLabels.add("15:00")
-        xLabels.add("15:20")
-        xLabels.add("15:40")
-        xLabels.add("16:00")
-        xLabels.add("16:20")
         axisXY.setAxisLabels(xLabels)
 
         axisX.typeface = Typeface.MONOSPACE
@@ -159,27 +180,28 @@ class HomeFragment : Fragment(), PrettyLogger {
         axisY.textColor = 0xFF00897B.toInt()
         axisY.setHasLines(true)
         axisX.maxLabelChars = 5
-        axisX.name = "时间"
+        axisX.name = axisXname
         axisX.setHasTiltedLabels(true)
-        axisY.name = "温度℃"
+        axisY.name = axisYname
 
-        //图标数据设置
+        //填充数据
         val data = LineChartData()
         data.axisXBottom = axisX
         data.axisYLeft = axisY
         data.lines = lines  //设置图表折线
         data.baseValue = Float.NEGATIVE_INFINITY
-        mChartView.lineChartData = data//给图表填充数据
+        mChartView.lineChartData = data
 
 
         //设置X、Y轴范围
         val maxViewPoint = Viewport(mChartView.maximumViewport)
         val v = Viewport()
         v.bottom = 0f
-        v.top = 100f
+        v.top = 50f
         v.left = 0f
         v.right = 10f
-        maxViewPoint.top = 100f
+        maxViewPoint.top = 50f
+        maxViewPoint.bottom = v.bottom - 0.1f
         maxViewPoint.right = numberOfPoints.toFloat() + 0.1f
         mChartView.maximumViewport = maxViewPoint
         mChartView.setCurrentViewportWithAnimation(v)

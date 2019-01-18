@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sensor_array">
+        <item>渗压计</item>
+        <item>钢筋计</item>
+        <item>锚杆计</item>
+        <item>应变计</item>
+        <item>位移计</item>
+        <item>测缝计</item>
+        <item>钢索计</item>
+        <item>渗压计</item>
+        <item>裂缝计</item>
+        <item>土压力计</item>
+        <item>锚索计</item>
+        <item>测斜计</item>
+        <item>温度计</item>
+    </string-array>
+</resources>
