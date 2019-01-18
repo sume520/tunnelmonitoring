@@ -8,8 +8,16 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.util.TimeUtils
 import android.widget.Toast
+import com.sun.tunnelmonitoring.Utils.TimeUtil
+import com.sun.tunnelmonitoring.db.manager.Temperature
 import kotlinx.android.synthetic.main.activity_main.*
+import org.litepal.LitePal
+import org.litepal.crud.LitePalSupport
+import org.litepal.extension.deleteAll
+import org.litepal.extension.find
+import org.litepal.extension.findAll
 import pub.devrel.easypermissions.EasyPermissions
 
 private const val PERMISSION_REQUEST_READ_WRITE_EXTERNAL_STORAGE = 1
@@ -56,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.i("MainActivity","oncreate")
+
         supportFragmentManager.inTransaction { add(R.id.activity_fragment, HomeFragment.get()) }
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         title = "主页"
@@ -69,9 +77,28 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
+
+       /* LitePal.deleteAll<Temperature>()
+        Temperature(12f,"2018-01-11","12:00").save()
+        Temperature(14f,"2018-01-11","12:10").save()
+        Temperature(15f,"2018-01-11","12:20").save()
+        Temperature( 8f,"2018-01-11","12:30").save()
+        Temperature(10f,"2018-01-11","12:40").save()
+        Temperature(10f,"2018-01-11","12:50").save()
+        Temperature(12f,"2018-01-12","12:00").save()
+        Temperature(14f,"2018-01-12","12:10").save()
+        Temperature(15f,"2018-01-12","12:20").save()
+        Temperature(11f,"2018-01-12","12:30").save()
+        Temperature(12f,"2018-01-12","12:40").save()
+        Temperature(15f,"2018-01-12","12:50").save()*/
+
+        val temps=LitePal.where("date like ? and time between ? and ?","2018-01-11","12:00","12:20").find<Temperature>()
+        for(temp in temps){
+            Log.i("LitePal Qurey",temp.toString())
+        }
     }
 
-    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit) {
+    private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit) {
         val fragmentTransaction = beginTransaction()
         fragmentTransaction.func()
         fragmentTransaction.commit()

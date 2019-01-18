@@ -13,6 +13,7 @@
         android:background="#58D68D"
         android:layout_margin="16dp"
         android:textColor="#FFFFFF"
+        android:textSize="20sp"
         android:text="警报限值设定" />
 
     <Button
@@ -22,6 +23,7 @@
         android:background="#58D68D"
         android:layout_margin="16dp"
         android:textColor="#FFFFFF"
+        android:textSize="20sp"
         android:text="基准坐标管理" />
 
     <Button
@@ -30,6 +32,7 @@
         android:background="#58D68D"
         android:layout_margin="16dp"
         android:textColor="#FFFFFF"
+        android:textSize="20sp"
         android:text="测杆基准标定" />
 
     <Button
@@ -41,7 +44,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="20sp"
         android:text="注销"/>
-
 
 </LinearLayout>
