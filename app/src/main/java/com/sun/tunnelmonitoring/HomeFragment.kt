@@ -8,11 +8,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
+import com.sun.tunnelmonitoring.Utils.SENSORS
 import com.sun.tunnelmonitoring.db.manager.Temperature
 import com.sun.tunnelmonitoring.tree.TreeFragment
-import com.threshold.logger.PrettyLogger
 import kotlinx.android.synthetic.main.fragment_home.*
 import lecho.lib.hellocharts.gesture.ContainerScrollType
 import lecho.lib.hellocharts.gesture.ZoomType
@@ -25,21 +25,30 @@ import org.litepal.extension.findAll
 import java.security.SecureRandom
 
 
-class HomeFragment : Fragment(), PrettyLogger {
+class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var maxNumberOfLines = 0
     private var numberOfPoints = 0
     private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
-    private var sensorType:String?=null
-    private var unitSignal:String?=null
-    private var values:ArrayList<PointValue>?=null
-    private var xLabels:ArrayList<String>?=null
-    private var axisXname:String?=null
-    private var axisYname:String?=null
-    private val lines = ArrayList<Line>()
+    private var sensorType: String? = null
+    private var unitSignal: String? = null
+    private var values: ArrayList<PointValue>? = null
+    private var xLabels: ArrayList<String>? = null
+    private var axisXname: String? = null
+    private var axisYname: String? = null
+    private var lines:ArrayList<Line>?=null
 
     init {
         //产生随机数据
         generateValues()
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        Log.i("onNothingSelected","nothing selected")
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        Log.i("onItemSelected","position: $position, id: $id, sensor: ${SENSORS[position]}")
+        selectSersor(SENSORS[position])
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,8 +67,6 @@ class HomeFragment : Fragment(), PrettyLogger {
     }
 
     companion object {
-        var count=0
-
         @SuppressLint("StaticFieldLeak")
         private var instance: HomeFragment? = null
             get() {
@@ -87,10 +94,13 @@ class HomeFragment : Fragment(), PrettyLogger {
                 .commit()
         }
 
-        var adapter=ArrayAdapter.createFromResource(activity,
-                R.array.sensor_array,android.R.layout.simple_spinner_item)
+        var adapter = ArrayAdapter.createFromResource(
+            activity,
+            R.array.sensor_array, android.R.layout.simple_spinner_item
+        )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spin_sensor.adapter=adapter
+        spin_sensor.adapter = adapter
+        spin_sensor.onItemSelectedListener = this
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -113,16 +123,24 @@ class HomeFragment : Fragment(), PrettyLogger {
         }
     }
 
-    private fun selectSersor(sensor:String){
-
+    //选择图标显示的传感器
+    private fun selectSersor(sensor: String) {
         val colors =
-            arrayOf(0xFF2196F3.toInt(),0xFF66BB6A.toInt(),0xFF673AB7.toInt(),0xFFFFEB3B.toInt())
+            arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
 
-        values= ArrayList()
+        //初始化图标
+        mChartView.lineChartData=null
+        axisXname=null
+        axisYname=null
 
-        when(sensor){
-            "温度计"->{
-                maxNumberOfLines=1
+        values = ArrayList()
+        lines= ArrayList()
+        //显示进度圈
+        progress.visibility=View.VISIBLE
+
+        when (sensor) {
+            "温度计" -> {
+                maxNumberOfLines = 1
                 //从数据库获取数据
                 val temps = LitePal.findAll<Temperature>()
                 numberOfPoints = temps.size
@@ -133,16 +151,17 @@ class HomeFragment : Fragment(), PrettyLogger {
                     val values = ArrayList<PointValue>()
                     for (j in 0 until numberOfPoints) {
                         values.add(PointValue(j.toFloat(), temps[j].temp.toFloat()))
+                        Log.i("LitePal","${temps[j]}")
                     }
                     line.values = values
                     line.color = colors[i]
                     line.isCubic = true
                     line.isFilled = true
                     line.setHasPoints(false)
-                    lines.add(line)
+                    lines!!.add(line)
                 }
                 //x轴标签
-                xLabels= ArrayList()
+                xLabels = ArrayList()
                 for (i in 0 until numberOfPoints) {
                     var str: String
                     if (temps[i].time == "12:00")
@@ -152,13 +171,15 @@ class HomeFragment : Fragment(), PrettyLogger {
                     xLabels!!.add(str)
                 }
                 //XY坐标名称
-                axisXname="时间"
-                axisXname="温度℃"
+                axisXname = "时间"
+                axisYname = "温度℃"
             }
         }
 
         //绘制图表
         drawChart()
+        //隐藏进度圈
+        progress.visibility=View.GONE
     }
 
     private fun drawChart() {
