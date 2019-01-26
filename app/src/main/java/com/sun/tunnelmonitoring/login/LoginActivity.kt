@@ -8,14 +8,14 @@ import android.support.v4.app.FragmentTransaction
 import com.sun.tunnelmonitoring.MainActivity
 import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.R
-import com.sun.tunnelmonitoring.SharedPreferencesUtils
+import com.sun.tunnelmonitoring.Utils.SharedPreferencesUtils
 
 class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isLogin=SharedPreferencesUtils.getLoginStatus(MyApplication.getContext())
-        val isAutoLogin=SharedPreferencesUtils.get_flag_auto(MyApplication.getContext())
+        val isLogin= SharedPreferencesUtils.getLoginStatus(MyApplication.getContext())
+        val isAutoLogin= SharedPreferencesUtils.get_flag_auto(MyApplication.getContext())
         if(isLogin&&isAutoLogin){
             val intent=Intent(this,MainActivity::class.java)
             startActivity(intent)

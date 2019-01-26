@@ -35,7 +35,9 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var xLabels: ArrayList<String>? = null
     private var axisXname: String? = null
     private var axisYname: String? = null
-    private var lines:ArrayList<Line>?=null
+    private var lines: ArrayList<Line>? = null
+    private var viewport: Viewport? = null
+    private var maxViewport: Viewport? = null
 
     init {
         //产生随机数据
@@ -43,11 +45,11 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        Log.i("onNothingSelected","nothing selected")
+        Log.i("onNothingSelected", "nothing selected")
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        Log.i("onItemSelected","position: $position, id: $id, sensor: ${SENSORS[position]}")
+        Log.i("onItemSelected", "position: $position, id: $id, sensor: ${SENSORS[position]}")
         selectSersor(SENSORS[position])
     }
 
@@ -77,7 +79,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
 
         @Synchronized
-        fun get(): HomeFragment {
+        fun get(): HomeFragment {//单例模式
             return instance!!
         }
     }
@@ -129,14 +131,15 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
             arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
 
         //初始化图标
-        mChartView.lineChartData=null
-        axisXname=null
-        axisYname=null
+        mChartView.lineChartData = null
+        axisXname = null
+        axisYname = null
+        setViewPort()
 
         values = ArrayList()
-        lines= ArrayList()
+        lines = ArrayList()
         //显示进度圈
-        progress.visibility=View.VISIBLE
+        progress.visibility = View.VISIBLE
 
         when (sensor) {
             "温度计" -> {
@@ -151,7 +154,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     val values = ArrayList<PointValue>()
                     for (j in 0 until numberOfPoints) {
                         values.add(PointValue(j.toFloat(), temps[j].temp.toFloat()))
-                        Log.i("LitePal","${temps[j]}")
+                        Log.i("LitePal", "${temps[j]}")
                     }
                     line.values = values
                     line.color = colors[i]
@@ -173,13 +176,19 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 //XY坐标名称
                 axisXname = "时间"
                 axisYname = "温度℃"
+
+                //设置xy轴范围
+             /*   setViewPort(
+                    50f, 0f, 0f, 10f,
+                    50f, -0.1f, 0f, numberOfPoints + 0.1f
+                )*/
             }
         }
 
         //绘制图表
         drawChart()
         //隐藏进度圈
-        progress.visibility=View.GONE
+        progress.visibility = View.GONE
     }
 
     private fun drawChart() {
@@ -215,17 +224,17 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
         //设置X、Y轴范围
-        val maxViewPoint = Viewport(mChartView.maximumViewport)
-        val v = Viewport()
-        v.bottom = 0f
-        v.top = 50f
-        v.left = 0f
-        v.right = 10f
-        maxViewPoint.top = 50f
-        maxViewPoint.bottom = v.bottom - 0.1f
-        maxViewPoint.right = numberOfPoints.toFloat() + 0.1f
-        mChartView.maximumViewport = maxViewPoint
-        mChartView.setCurrentViewportWithAnimation(v)
+         val maxViewPoint = Viewport(mChartView.maximumViewport)
+         val v = Viewport()
+         v.bottom = 0f
+         v.top = 50f
+         v.left = 0f
+         v.right = 10f
+         maxViewPoint.top = 50f
+         maxViewPoint.bottom = v.bottom - 0.1f
+         maxViewPoint.right = numberOfPoints.toFloat() + 0.1f
+         mChartView.maximumViewport = maxViewPoint
+         mChartView.setCurrentViewportWithAnimation(v)
     }
 
     //XY轴设置
@@ -263,6 +272,37 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 axisY.values = axisYValues
             }
         }
+    }
+
+    private fun setViewPort(
+        cTop: Float = 0f,
+        cBotton: Float = 0f,
+        cLeft: Float = 0f,
+        cRight: Float = 0f,
+        maxTop: Float = 0f,
+        maxButton: Float = 0f,
+        maxLeft: Float = 0f,
+        maxRight: Float = 0f
+    ) {
+        val viewport = Viewport()
+        viewport.apply {
+            top = cTop
+            bottom = cBotton
+            left = cLeft
+            right = cRight
+        }
+        mChartView.setCurrentViewportWithAnimation(viewport)
+
+        val maxViewport = Viewport(mChartView.maximumViewport)
+        maxViewport.apply {
+            top = maxTop
+            bottom = maxButton
+            right = maxRight
+            left = maxLeft
+        }
+        mChartView.maximumViewport = maxViewport
+
+
     }
 
 }

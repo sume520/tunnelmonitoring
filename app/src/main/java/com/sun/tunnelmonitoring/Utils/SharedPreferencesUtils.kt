@@ -1,4 +1,4 @@
-package com.sun.tunnelmonitoring
+package com.sun.tunnelmonitoring.Utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -15,7 +15,7 @@ object SharedPreferencesUtils {
     }
 
     fun setLoginStatus(isLogin:Boolean,context: Context){
-        val edit=share(context).edit()
+        val edit= share(context).edit()
         edit.putBoolean("login",isLogin).apply()
     }
 
