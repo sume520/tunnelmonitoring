@@ -23,16 +23,31 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
-            <!--<intent-filter>
+
+        <activity android:name=".alarm.AlarmActivity">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
 
+        <service
+            android:name=".alarm.AlarmService"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
         <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

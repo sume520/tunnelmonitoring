@@ -22,11 +22,8 @@ import java.io.IOException
 import com.squareup.okhttp.RequestBody
 import android.os.Message
 import android.widget.Toast
-import com.google.gson.Gson
 import com.sun.tunnelmonitoring.MyApplication
-import com.sun.tunnelmonitoring.SharedPreferencesUtils
-import com.sun.tunnelmonitoring.db.manager.User
-import com.sun.tunnelmonitoring.db.manager.UserDao
+import com.sun.tunnelmonitoring.Utils.SharedPreferencesUtils
 
 
 class LoginFragment : Fragment() {
@@ -57,7 +54,7 @@ class LoginFragment : Fragment() {
 
         //设置密码是否可见
         tb_show_hide_pass.setOnCheckedChangeListener{ _, isChecked ->
-            if (isChecked) {
+            if (!isChecked) {
                 et_password.transformationMethod = PasswordTransformationMethod.getInstance()
             } else {
                 et_password.transformationMethod = HideReturnsTransformationMethod.getInstance()
@@ -117,6 +114,7 @@ class LoginFragment : Fragment() {
             e.printStackTrace()
         }
 
+
         loginjsonString = null
         loginjsonString = loginobject.toString()
         val body = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), loginjsonString)
@@ -155,16 +153,18 @@ class LoginFragment : Fragment() {
                     Toast.makeText(MyApplication.getContext(), "密码错误或账户未激活", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.i("xxxaccount", SharedPreferencesUtils.getaccount(ctx) + "")
-                    if (cb_autologin.isChecked()) {
+                    if (cb_autologin.isChecked()) {//是否自动登录
                         SharedPreferencesUtils.set_flag_auto(true, ctx)
                     } else {
                         SharedPreferencesUtils.set_flag_auto(false,ctx)
                     }
-                    //保存账号密码
-                    if (cb_remember_pass.isChecked()) {
+
+                    if (cb_remember_pass.isChecked()) {//是否保存账号密码
                         SharedPreferencesUtils.setaccount(account, ctx)
                         SharedPreferencesUtils.setpswd(password, ctx)
                         SharedPreferencesUtils.set_flag_rem(true, ctx)
+                    }else{
+                        SharedPreferencesUtils.set_flag_rem(false,ctx)
                     }
 
                     SharedPreferencesUtils.setLoginStatus(true,ctx)

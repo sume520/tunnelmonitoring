@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
 
-       /* LitePal.deleteAll<Temperature>()
+        LitePal.deleteAll<Temperature>()
         Temperature(12f,"2018-01-11","12:00").save()
         Temperature(14f,"2018-01-11","12:10").save()
         Temperature(15f,"2018-01-11","12:20").save()
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         Temperature(15f,"2018-01-12","12:20").save()
         Temperature(11f,"2018-01-12","12:30").save()
         Temperature(12f,"2018-01-12","12:40").save()
-        Temperature(15f,"2018-01-12","12:50").save()*/
+        Temperature(15f,"2018-01-12","12:50").save()
 
         val temps=LitePal.where("date like ? and time between ? and ?","2018-01-11","12:00","12:20").find<Temperature>()
         for(temp in temps){
