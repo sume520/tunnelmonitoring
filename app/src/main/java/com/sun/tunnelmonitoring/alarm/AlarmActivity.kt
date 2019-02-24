@@ -20,7 +20,7 @@ class AlarmActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alarm)
-
+        title="数据警报"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             var channelId = "alert"
             var channelName = "警报"
@@ -29,31 +29,35 @@ class AlarmActivity : AppCompatActivity() {
         }
 
         bt_alert.setOnClickListener {
-            var manager =
-                getSystemService(Context.NOTIFICATION_SERVICE)
-                        as NotificationManager
-            var resultIntent= Intent(this,AlarmActivity::class.java)
-            var pendingIntent=PendingIntent
-                .getActivity(
-                    this,0,
-                    resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
-            var notification = NotificationCompat.Builder(this, "alert")
-                .setContentTitle("警报信息")
-                .setContentText("有测点检测到异常数据")
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(false)
-                .setSmallIcon(R.drawable.ic_alert)
-                .setContentIntent(pendingIntent)
-                .setLargeIcon(
-                    BitmapFactory
-                        .decodeResource(
-                            resources, R.drawable.ic_alert))
-                .build()
-            //持续警报
-            notification.flags= Notification.FLAG_INSISTENT
-            manager.notify(1, notification)
+            newAlert()
         }
+    }
+
+    private fun newAlert(){
+        var manager =
+            getSystemService(Context.NOTIFICATION_SERVICE)
+                    as NotificationManager
+        var resultIntent= Intent(this,AlarmActivity::class.java)
+        var pendingIntent=PendingIntent
+            .getActivity(
+                this,0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+        var notification = NotificationCompat.Builder(this, "alert")
+            .setContentTitle("警报信息")
+            .setContentText("有测点检测到异常数据")
+            .setWhen(System.currentTimeMillis())
+            .setAutoCancel(false)
+            .setSmallIcon(R.drawable.ic_alert)
+            .setContentIntent(pendingIntent)
+            .setLargeIcon(
+                BitmapFactory
+                    .decodeResource(
+                        resources, R.drawable.ic_alert))
+            .build()
+        //警报
+        notification.flags= Notification.FLAG_AUTO_CANCEL
+        manager.notify(1, notification)
     }
 
     @TargetApi(Build.VERSION_CODES.O)

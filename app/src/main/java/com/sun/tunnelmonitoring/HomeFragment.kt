@@ -10,9 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import com.google.gson.Gson
 import com.sun.tunnelmonitoring.Utils.SENSORS
-import com.sun.tunnelmonitoring.db.manager.Temperature
+import com.sun.tunnelmonitoring.db.manager.SensorData
+import com.sun.tunnelmonitoring.db.manager.SensorDataList
 import com.sun.tunnelmonitoring.tree.TreeFragment
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_home.*
 import lecho.lib.hellocharts.gesture.ContainerScrollType
 import lecho.lib.hellocharts.gesture.ZoomType
@@ -21,12 +24,15 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.litepal.LitePal
+import org.litepal.extension.deleteAll
 import org.litepal.extension.findAll
+import java.net.URL
 import java.security.SecureRandom
 
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
-    private var maxNumberOfLines = 0
+    private var maxNumberOfLines = 1
     private var numberOfPoints = 0
     private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
     private var sensorType: String? = null
@@ -63,7 +69,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         return view
     }
@@ -88,21 +94,31 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onActivityCreated(savedInstanceState)
         //绘制折线图
         //drawChart()
-        selectSersor("温度计")
+        selectSersor("温度计")//选择显示的传感器
         bt_baseinform.setOnClickListener {
             activity!!.supportFragmentManager
                 .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }
-
-        var adapter = ArrayAdapter.createFromResource(
+        val adapter = ArrayAdapter.createFromResource(
             activity,
             R.array.sensor_array, android.R.layout.simple_spinner_item
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spin_sensor.adapter = adapter
         spin_sensor.onItemSelectedListener = this
+
+        Thread {
+            val json = URL("http://www.bluelin.xyz/system/tree/VibratingDataInfo/").readText()
+            val gson = Gson()
+            val sensorDataList = gson.fromJson(json, SensorDataList::class.java)
+
+            LitePal.deleteAll<SensorData>()
+            sensorDataList.data.forEach { data ->
+                data.save()
+            }
+        }.start()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -141,23 +157,55 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         //显示进度圈
         progress.visibility = View.VISIBLE
 
-        when (sensor) {
+        //从数据库获取数据
+        val sensorDatas = LitePal.findAll<SensorData>()
+        when (sensor) {//根据不同传感器进行不同设置
             "温度计" -> {
-                maxNumberOfLines = 1
-                //从数据库获取数据
-                val temps = LitePal.findAll<Temperature>()
+
+                //val temps = LitePal.findAll<Temperature>()
+                var temps= mutableListOf<Float>()
+                Observable.fromArray(sensorDatas)//提取温度
+                    .flatMap {
+                        val temps= mutableListOf<Float>()
+                        it.forEach { data->
+                            temps.add(data.temperature)
+                        }
+                        return@flatMap Observable.fromArray(temps)
+                    }.subscribe {
+                        temps=it
+                    }
+
+                val times= mutableListOf<String>()
+                val dates= mutableListOf<String>()
+                Observable.fromArray(sensorDatas)//获取日期
+                    .flatMap {
+                        val times= mutableListOf<String>()
+                        it.forEach {
+                            times.add(it.create_time)
+                        }
+                        return@flatMap Observable.fromArray(times)
+                    }.subscribe{
+                        it.forEach {
+                            val strs=it.trim().split(" ")
+                            dates.add(strs[0])
+                            times.add(strs[1].substring(0,5))
+                            Log.i(">>>>>>>>>>>>>","date: ${strs[0]}")
+                            Log.i(">>>>>>>>>>>>>","time: ${strs[1]}")
+                        }
+                    }
+
                 numberOfPoints = temps.size
                 //填充的数据
-                values!!.clear()
-                for (i in 0 until maxNumberOfLines) {
+                values!!.clear()//清空数值避免出现线条重叠
+                for (lineNumber in 0 until maxNumberOfLines) {
                     val line = Line()
                     val values = ArrayList<PointValue>()
-                    for (j in 0 until numberOfPoints) {
-                        values.add(PointValue(j.toFloat(), temps[j].temp.toFloat()))
-                        Log.i("LitePal", "${temps[j]}")
+                    for (pointNumber in 0 until numberOfPoints) {
+                        values.add(PointValue(pointNumber.toFloat(), temps[pointNumber]))
+                        //Log.i("LitePal", "${temps[pointNumber]}")
                     }
                     line.values = values
-                    line.color = colors[i]
+                    line.color = colors[lineNumber]
                     line.isCubic = true
                     line.isFilled = true
                     line.setHasPoints(false)
@@ -167,10 +215,11 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 xLabels = ArrayList()
                 for (i in 0 until numberOfPoints) {
                     var str: String
-                    if (temps[i].time == "12:00")
-                        str = temps[i].date.substring(5)
+
+                    if (times[i] == "12:00")
+                        str = dates[i].substring(5)
                     else
-                        str = temps[i].time
+                        str = times[i]
                     xLabels!!.add(str)
                 }
                 //XY坐标名称
@@ -178,10 +227,10 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 axisYname = "温度℃"
 
                 //设置xy轴范围
-             /*   setViewPort(
-                    50f, 0f, 0f, 10f,
-                    50f, -0.1f, 0f, numberOfPoints + 0.1f
-                )*/
+                /*   setViewPort(
+                       50f, 0f, 0f, 10f,
+                       50f, -0.1f, 0f, numberOfPoints + 0.1f
+                   )*/
             }
         }
 
@@ -191,7 +240,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         progress.visibility = View.GONE
     }
 
-    private fun drawChart() {
+    private fun drawChart() {//绘制图标
 
         //图表属性设置
         mChartView.isInteractive = true//设置图表是可以交互的（拖拽，缩放等效果的前提）
@@ -224,17 +273,17 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
         //设置X、Y轴范围
-         val maxViewPoint = Viewport(mChartView.maximumViewport)
-         val v = Viewport()
-         v.bottom = 0f
-         v.top = 50f
-         v.left = 0f
-         v.right = 10f
-         maxViewPoint.top = 50f
-         maxViewPoint.bottom = v.bottom - 0.1f
-         maxViewPoint.right = numberOfPoints.toFloat() + 0.1f
-         mChartView.maximumViewport = maxViewPoint
-         mChartView.setCurrentViewportWithAnimation(v)
+        val maxViewPoint = Viewport(mChartView.maximumViewport)
+        val v = Viewport()
+        v.bottom = 0f
+        v.top = 50f
+        v.left = 0f
+        v.right = 10f
+        maxViewPoint.top = 50f
+        maxViewPoint.bottom = v.bottom - 0.1f
+        maxViewPoint.right = numberOfPoints.toFloat() + 0.1f
+        mChartView.maximumViewport = maxViewPoint
+        mChartView.setCurrentViewportWithAnimation(v)
     }
 
     //XY轴设置
@@ -302,6 +351,9 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         mChartView.maximumViewport = maxViewport
 
+    }
+
+    private fun tempSetting(){
 
     }
 

@@ -30,11 +30,11 @@ object TcpClient {
                 .option(ChannelOption.SO_KEEPALIVE, true)
 
             channel = b.connect(HOST, PORT).sync().channel()
-            println("与服务器连接")
+            println("==============与服务器连接")
             handler.post { Toast.makeText(MyApplication.getContext(),"连接到服务器",Toast.LENGTH_SHORT).show() }
             //channel.closeFuture().await()
         } catch (e: Exception) {
-            println("连接服务器失败")
+            println("==============连接服务器失败")
         } finally {
             // group.shutdownGracefully()
             //println("客户端已关闭")
