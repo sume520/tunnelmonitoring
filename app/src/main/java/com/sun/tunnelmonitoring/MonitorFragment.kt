@@ -2,13 +2,16 @@ package com.sun.tunnelmonitoring
 
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.sun.tunnelmonitoring.alarm.AlarmActivity
 import com.sun.tunnelmonitoring.tree.TreeFragment
+import kotlinx.android.synthetic.main.activity_alarm.*
 import kotlinx.android.synthetic.main.fragment_monitor.*
 import lecho.lib.hellocharts.gesture.ContainerScrollType
 import lecho.lib.hellocharts.gesture.ZoomType
@@ -33,6 +36,11 @@ class MonitorFragment : Fragment() {
                 .beginTransaction().add(R.id.activity_fragment, LiveMeasureFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        bt_data_warnning.setOnClickListener {
+            val intent=Intent(activity,AlarmActivity::class.java)
+            startActivity(intent)
         }
 
     }

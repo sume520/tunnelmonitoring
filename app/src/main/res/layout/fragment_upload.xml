@@ -5,40 +5,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#FFFFFF"
-    tools:context=".LiveMeasureFragment">
+    tools:context=".UploadFragment">
 
     <Button
+        android:id="@+id/bt_pulldata"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:textColor="#FFFFFF"
         android:background="#58D68D"
-        android:text="炮眼参数检测"/>
+        android:text="获取数据"/>
 
     <Button
+        android:id="@+id/bt_upload"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:textColor="#FFFFFF"
         android:background="#58D68D"
-        android:text="隧道断面扫描"/>
+        android:text="点击上传"/>
 
-    <Button
-        android:id="@+id/bt_uploadData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:textColor="#FFFFFF"
-        android:background="#58D68D"
-        android:text="上传数据"/>
-
-    <Button
-        android:id="@+id/bt_view_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:textColor="#FFFFFF"
-        android:background="#58D68D"
-        android:text="查看数据  "/>
 
 </LinearLayout>

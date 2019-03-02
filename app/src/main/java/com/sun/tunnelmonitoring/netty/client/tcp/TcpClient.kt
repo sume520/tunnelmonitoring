@@ -30,15 +30,19 @@ object TcpClient {
                 .option(ChannelOption.SO_KEEPALIVE, true)
 
             channel = b.connect(HOST, PORT).sync().channel()
-            println("与服务器连接")
+            println("==============与服务器连接")
             handler.post { Toast.makeText(MyApplication.getContext(),"连接到服务器",Toast.LENGTH_SHORT).show() }
             //channel.closeFuture().await()
         } catch (e: Exception) {
-            println("连接服务器失败")
+            println("==============连接服务器失败")
         } finally {
             // group.shutdownGracefully()
             //println("客户端已关闭")
         }
+    }
+
+    fun sendMessage(msg:String){
+        channel!!.writeAndFlush(msg.toByte())
     }
 
     fun sendFile(filename:String) {
@@ -57,7 +61,7 @@ object TcpClient {
                 println("待发送数据大小：${size}Kb")
                 val bytes=file.readBytes()
                 channel!!.writeAndFlush(bytes).sync()
-                channel!!.writeAndFlush(delimiter)
+                channel!!.writeAndFlush(delimiter)//最后发送结束符结束粘包
                 println("发送完成")
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
@@ -67,6 +71,7 @@ object TcpClient {
     }
 
     fun close(){
-        group.shutdownGracefully().sync()
+        channel!!.close().sync()
+        group.shutdownGracefully()
     }
 }

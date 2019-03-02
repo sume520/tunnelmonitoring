@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_live_measure.*
 
 class LiveMeasureFragment : Fragment() {
 
@@ -15,6 +16,15 @@ class LiveMeasureFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_live_measure, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        bt_uploadData.setOnClickListener {
+            activity!!.supportFragmentManager
+                .beginTransaction().add(R.id.activity_fragment, UploadFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+    }
 
     companion object {
         @JvmStatic
