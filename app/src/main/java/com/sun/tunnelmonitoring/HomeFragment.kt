@@ -3,6 +3,7 @@ package com.sun.tunnelmonitoring
 import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import com.google.gson.Gson
 import com.sun.tunnelmonitoring.Utils.SENSORS
 import com.sun.tunnelmonitoring.db.manager.SensorData
@@ -26,12 +28,14 @@ import org.greenrobot.eventbus.ThreadMode
 import org.litepal.LitePal
 import org.litepal.extension.deleteAll
 import org.litepal.extension.findAll
+import java.io.FileNotFoundException
 import java.net.URL
 import java.security.SecureRandom
 
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
+
     private var maxNumberOfLines = 1
     private var numberOfPoints = 0
     private var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
@@ -44,11 +48,49 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var lines: ArrayList<Line>? = null
     private var viewport: Viewport? = null
     private var maxViewport: Viewport? = null
+    private var sensorDatas:MutableList<SensorData>?=null
+    val colors =
+        arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
+    private val handler=Handler()
 
     init {
         //产生随机数据
         generateValues()
+
+        Thread {//获取传感器数据
+            try {
+                val json = URL("http://www.bluelin.xyz/system/tree/VibratingDataInfo/").readText()
+                val gson = Gson()
+                val sensorDataList = gson.fromJson(json, SensorDataList::class.java)
+                LitePal.deleteAll<SensorData>()
+                sensorDataList.data.forEach { data ->
+                    data.save()
+                }
+            }catch (e:Exception){
+                Log.i(">>>>>>>>>>>>>>","获取数据失败")
+                handler.post {
+                    Toast.makeText(context,"获取数据失败",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.start()
     }
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        private var instance: HomeFragment? = null
+            get() {
+                if (field == null) {
+                    field = HomeFragment()
+                }
+                return field
+            }
+
+        @Synchronized
+        fun get(): HomeFragment {//单例模式
+            return instance!!
+        }
+    }
+
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         Log.i("onNothingSelected", "nothing selected")
@@ -74,33 +116,20 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         return view
     }
 
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        private var instance: HomeFragment? = null
-            get() {
-                if (field == null) {
-                    field = HomeFragment()
-                }
-                return field
-            }
-
-        @Synchronized
-        fun get(): HomeFragment {//单例模式
-            return instance!!
-        }
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //绘制折线图
         //drawChart()
         selectSersor("温度计")//选择显示的传感器
+        spin_sensor.setSelection(2,true)
+
         bt_baseinform.setOnClickListener {
             activity!!.supportFragmentManager
                 .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }
+        //下拉列表适配器
         val adapter = ArrayAdapter.createFromResource(
             activity,
             R.array.sensor_array, android.R.layout.simple_spinner_item
@@ -109,27 +138,11 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spin_sensor.adapter = adapter
         spin_sensor.onItemSelectedListener = this
 
-        Thread {
-            val json = URL("http://www.bluelin.xyz/system/tree/VibratingDataInfo/").readText()
-            val gson = Gson()
-            val sensorDataList = gson.fromJson(json, SensorDataList::class.java)
-
-            LitePal.deleteAll<SensorData>()
-            sensorDataList.data.forEach { data ->
-                data.save()
-            }
-        }.start()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     //在UI线程中处理EventBus事件
     fun onUIUpdateEvent(messageEvent: MessageEvent) {
-    }
-
-
-    override fun onDestroy() {
-        EventBus.getDefault().unregister(this)
-        super.onDestroy()
     }
 
     //生成随机值
@@ -141,29 +154,52 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    //选择图标显示的传感器
-    private fun selectSersor(sensor: String) {
-        val colors =
-            arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
-
+    private fun initChart(){
         //初始化图标
         mChartView.lineChartData = null
         axisXname = null
         axisYname = null
         setViewPort()
-
+        //初始化变量
         values = ArrayList()
         lines = ArrayList()
+    }
+
+    //选择图标显示的传感器
+    @SuppressLint("CheckResult")
+    private fun selectSersor(sensor: String) {
+        initChart()
+
         //显示进度圈
         progress.visibility = View.VISIBLE
 
         //从数据库获取数据
-        val sensorDatas = LitePal.findAll<SensorData>()
+        sensorDatas = LitePal.findAll<SensorData>()
+        var datas= mutableListOf<Float>()
+        val times= mutableListOf<String>()
+        val dates= mutableListOf<String>()
+
+        Observable.fromArray(sensorDatas)//获取日期
+            .flatMap {
+                val times= mutableListOf<String>()
+                it.forEach {
+                    times.add(it.create_time)
+                }
+                return@flatMap Observable.fromArray(times)
+            }.subscribe{
+                it.forEach {
+                    val strs=it.trim().split(" ")
+                    dates.add(strs[0])
+                    times.add(strs[1].substring(0,5))
+                    Log.i(">>>>>>>>>>>>>","date: ${strs[0]} time: ${strs[1]}")
+                }
+            }
+
         when (sensor) {//根据不同传感器进行不同设置
             "温度计" -> {
 
                 //val temps = LitePal.findAll<Temperature>()
-                var temps= mutableListOf<Float>()
+
                 Observable.fromArray(sensorDatas)//提取温度
                     .flatMap {
                         val temps= mutableListOf<Float>()
@@ -172,57 +208,10 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         }
                         return@flatMap Observable.fromArray(temps)
                     }.subscribe {
-                        temps=it
+                        datas=it
                     }
 
-                val times= mutableListOf<String>()
-                val dates= mutableListOf<String>()
-                Observable.fromArray(sensorDatas)//获取日期
-                    .flatMap {
-                        val times= mutableListOf<String>()
-                        it.forEach {
-                            times.add(it.create_time)
-                        }
-                        return@flatMap Observable.fromArray(times)
-                    }.subscribe{
-                        it.forEach {
-                            val strs=it.trim().split(" ")
-                            dates.add(strs[0])
-                            times.add(strs[1].substring(0,5))
-                            Log.i(">>>>>>>>>>>>>","date: ${strs[0]}")
-                            Log.i(">>>>>>>>>>>>>","time: ${strs[1]}")
-                        }
-                    }
-
-                numberOfPoints = temps.size
-                //填充的数据
-                values!!.clear()//清空数值避免出现线条重叠
-                for (lineNumber in 0 until maxNumberOfLines) {
-                    val line = Line()
-                    val values = ArrayList<PointValue>()
-                    for (pointNumber in 0 until numberOfPoints) {
-                        values.add(PointValue(pointNumber.toFloat(), temps[pointNumber]))
-                        //Log.i("LitePal", "${temps[pointNumber]}")
-                    }
-                    line.values = values
-                    line.color = colors[lineNumber]
-                    line.isCubic = true
-                    line.isFilled = true
-                    line.setHasPoints(false)
-                    lines!!.add(line)
-                }
-                //x轴标签
-                xLabels = ArrayList()
-                for (i in 0 until numberOfPoints) {
-                    var str: String
-
-                    if (times[i] == "12:00")
-                        str = dates[i].substring(5)
-                    else
-                        str = times[i]
-                    xLabels!!.add(str)
-                }
-                //XY坐标名称
+                //设置XY坐标名称
                 axisXname = "时间"
                 axisYname = "温度℃"
 
@@ -232,6 +221,34 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                        50f, -0.1f, 0f, numberOfPoints + 0.1f
                    )*/
             }
+        }
+
+        numberOfPoints = datas.size
+        //填充的数据
+        values!!.clear()//清空数值避免出现线条重叠
+        for (lineNumber in 0 until maxNumberOfLines) {
+            val line = Line()
+            val values = ArrayList<PointValue>()
+            for (pointNumber in 0 until numberOfPoints) {
+                values.add(PointValue(pointNumber.toFloat(), datas[pointNumber]))
+            }
+            line.values = values
+            line.color = colors[lineNumber]
+            line.isCubic = true
+            line.isFilled = true
+            line.setHasPoints(false)
+            lines!!.add(line)
+        }
+        //x轴标签
+        xLabels = ArrayList()
+        for (i in 0 until numberOfPoints) {
+            var str: String
+
+            if (times[i] == "12:00")
+                str = dates[i].substring(5)
+            else
+                str = times[i]
+            xLabels!!.add(str)
         }
 
         //绘制图表
@@ -355,6 +372,11 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun tempSetting(){
 
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
 }

@@ -22,9 +22,9 @@ class AlarmActivity : AppCompatActivity() {
         setContentView(R.layout.activity_alarm)
         title="数据警报"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            var channelId = "alert"
-            var channelName = "警报"
-            var importance = NotificationManager.IMPORTANCE_HIGH
+            val channelId = "alert"
+            val channelName = "警报"
+            val importance = NotificationManager.IMPORTANCE_HIGH
             createNotificationChannel(channelId, channelName, importance)
         }
 
@@ -34,16 +34,16 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     private fun newAlert(){
-        var manager =
+        val manager =
             getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager
-        var resultIntent= Intent(this,AlarmActivity::class.java)
-        var pendingIntent=PendingIntent
+        val resultIntent= Intent(this,AlarmActivity::class.java)
+        val pendingIntent=PendingIntent
             .getActivity(
                 this,0,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
-        var notification = NotificationCompat.Builder(this, "alert")
+        val notification = NotificationCompat.Builder(this, "alert")
             .setContentTitle("警报信息")
             .setContentText("有测点检测到异常数据")
             .setWhen(System.currentTimeMillis())
@@ -66,8 +66,8 @@ class AlarmActivity : AppCompatActivity() {
         channelName: String,
         importance: Int
     ) {//创建通知渠道
-        var channel = NotificationChannel(channelId, channelName, importance)
-        var notificationManager =
+        val channel = NotificationChannel(channelId, channelName, importance)
+        val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager
         notificationManager.createNotificationChannel(channel)

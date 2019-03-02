@@ -29,8 +29,8 @@ class TcpServerInitializer : ChannelInitializer<SocketChannel>() {
         override fun channelRead(ctx: ChannelHandlerContext?, msg: Any?) {
             super.channelRead(ctx, msg)
 
-            var bytes=msg as ByteArray
-            var filepath= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + "rec.txt"
+            val bytes=msg as ByteArray
+            val filepath= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + "rec.txt"
             val file=File(filepath)
             if(!file.exists()) file.createNewFile()
             file.writeBytes(bytes)

@@ -39,7 +39,7 @@ class MonitorFragment : Fragment() {
         }
 
         bt_data_warnning.setOnClickListener {
-            var intent=Intent(activity,AlarmActivity::class.java)
+            val intent=Intent(activity,AlarmActivity::class.java)
             startActivity(intent)
         }
 

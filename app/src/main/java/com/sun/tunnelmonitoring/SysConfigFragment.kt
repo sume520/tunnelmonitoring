@@ -22,7 +22,6 @@ class SysConfigFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_sys_config, container, false)
     }
 
-
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var instance:SysConfigFragment?=null

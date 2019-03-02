@@ -41,6 +41,10 @@ object TcpClient {
         }
     }
 
+    fun sendMessage(msg:String){
+        channel!!.writeAndFlush(msg.toByte())
+    }
+
     fun sendFile(filename:String) {
         val filepath= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename
         val file = File(filepath)
@@ -57,7 +61,7 @@ object TcpClient {
                 println("待发送数据大小：${size}Kb")
                 val bytes=file.readBytes()
                 channel!!.writeAndFlush(bytes).sync()
-                channel!!.writeAndFlush(delimiter)
+                channel!!.writeAndFlush(delimiter)//最后发送结束符结束粘包
                 println("发送完成")
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
@@ -67,6 +71,7 @@ object TcpClient {
     }
 
     fun close(){
-        group.shutdownGracefully().sync()
+        channel!!.close().sync()
+        group.shutdownGracefully()
     }
 }
