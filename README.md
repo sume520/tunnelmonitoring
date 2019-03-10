@@ -5,4 +5,4 @@ Android Studio3.3
 #### 编程语言
 kotlin
 #### 使用框架
-netty、rxjava、okhttp、litepal、hellochart
+netty、rxjava、okhttp、litepal、hellochart、Eventbus
