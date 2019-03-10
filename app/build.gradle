@@ -49,7 +49,6 @@ dependencies {
 
     implementation files('libs/slf4j-simple-1.7.25.jar')
     implementation files('libs/netty-all-4.1.32.Final.jar')
-    implementation files('libs/netty-all-4.1.32.Final-sources.jar')
     implementation 'android.arch.navigation:navigation-fragment:1.0.0-beta02'
     implementation 'android.arch.navigation:navigation-ui:1.0.0-beta02'
     implementation 'com.squareup.okhttp:okhttp:2.4.0'

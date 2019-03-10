@@ -1,6 +1,7 @@
 package com.sun.tunnelmonitoring
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
@@ -14,9 +15,10 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.google.gson.Gson
 import com.sun.tunnelmonitoring.Utils.SENSORS
-import com.sun.tunnelmonitoring.db.manager.SensorData
-import com.sun.tunnelmonitoring.db.manager.SensorDataList
-import com.sun.tunnelmonitoring.tree.TreeFragment
+import com.sun.tunnelmonitoring.db.manager.SensorInfo
+import com.sun.tunnelmonitoring.db.manager.SensorInfoList
+import com.sun.tunnelmonitoring.events.MessageEvent
+import com.sun.tunnelmonitoring.projectTree.ProjectTreeActivity
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_home.*
 import lecho.lib.hellocharts.gesture.ContainerScrollType
@@ -28,7 +30,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.litepal.LitePal
 import org.litepal.extension.deleteAll
 import org.litepal.extension.findAll
-import java.io.FileNotFoundException
 import java.net.URL
 import java.security.SecureRandom
 
@@ -48,7 +49,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var lines: ArrayList<Line>? = null
     private var viewport: Viewport? = null
     private var maxViewport: Viewport? = null
-    private var sensorDatas:MutableList<SensorData>?=null
+    private var sensorDatas: MutableList<SensorInfo>? = null
     val colors =
         arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
     private val handler=Handler()
@@ -61,8 +62,8 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
             try {
                 val json = URL("http://www.bluelin.xyz/system/tree/VibratingDataInfo/").readText()
                 val gson = Gson()
-                val sensorDataList = gson.fromJson(json, SensorDataList::class.java)
-                LitePal.deleteAll<SensorData>()
+                val sensorDataList = gson.fromJson(json, SensorInfoList::class.java)
+                LitePal.deleteAll<SensorInfo>()
                 sensorDataList.data.forEach { data ->
                     data.save()
                 }
@@ -124,10 +125,12 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spin_sensor.setSelection(2,true)
 
         bt_baseinform.setOnClickListener {
-            activity!!.supportFragmentManager
-                .beginTransaction().add(R.id.activity_fragment, TreeFragment.newInstance())
+            /*activity!!.supportFragmentManager
+                .beginTransaction().add(R.id.activity_fragment, TreeFragment.get())
                 .addToBackStack(null)
-                .commit()
+                .commit()*/
+            val intent = Intent(context, ProjectTreeActivity::class.java)
+            startActivity(intent)
         }
         //下拉列表适配器
         val adapter = ArrayAdapter.createFromResource(
@@ -174,7 +177,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         progress.visibility = View.VISIBLE
 
         //从数据库获取数据
-        sensorDatas = LitePal.findAll<SensorData>()
+        sensorDatas = LitePal.findAll<SensorInfo>()
         var datas= mutableListOf<Float>()
         val times= mutableListOf<String>()
         val dates= mutableListOf<String>()

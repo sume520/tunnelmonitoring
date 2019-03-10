@@ -23,9 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-
-        <activity android:name=".alarm.AlarmActivity">
-        </activity>
+        <activity android:name=".projectTree.ProjectTreeActivity"></activity>
+        <activity android:name=".alarm.AlarmActivity"></activity>
 
         <service
             android:name=".alarm.AlarmService"

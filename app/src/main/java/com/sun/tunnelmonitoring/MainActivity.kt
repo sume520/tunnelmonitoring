@@ -7,22 +7,9 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.util.TimeUtils
 import android.widget.Toast
-import com.google.gson.Gson
-import com.sun.tunnelmonitoring.Utils.TimeUtil
-import com.sun.tunnelmonitoring.db.manager.SensorData
-import com.sun.tunnelmonitoring.db.manager.SensorDataList
-import com.sun.tunnelmonitoring.db.manager.Temperature
 import kotlinx.android.synthetic.main.activity_main.*
-import org.litepal.LitePal
-import org.litepal.crud.LitePalSupport
-import org.litepal.extension.deleteAll
-import org.litepal.extension.find
-import org.litepal.extension.findAll
 import pub.devrel.easypermissions.EasyPermissions
-import java.net.URL
 
 private const val PERMISSION_REQUEST_READ_WRITE_EXTERNAL_STORAGE = 1
 

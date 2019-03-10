@@ -1,5 +1,5 @@
 import android.os.Environment
-import com.sun.tunnelmonitoring.MessageEvent
+import com.sun.tunnelmonitoring.events.MessageEvent
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import io.netty.channel.ChannelInitializer
@@ -32,7 +32,7 @@ class TcpClientInitializer : ChannelInitializer<SocketChannel>() {
             if(!file.exists()) file.createNewFile()
             file.writeBytes(bytes)
             println("接收数据完成")
-            EventBus.getDefault().post(MessageEvent("接收到数据，大小为：${bytes.size/1024}KB\n已保存为文件rec.txt\n保存路径：$filepath"))
+            EventBus.getDefault().post(MessageEvent("接收到数据，大小为：${bytes.size / 1024}KB\n已保存为文件rec.txt\n保存路径：$filepath"))
 
             //接收完成后关闭客户端
             ctx!!.close().sync()

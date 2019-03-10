@@ -1,6 +1,5 @@
 import android.os.Environment
-import android.util.Log
-import com.sun.tunnelmonitoring.MessageEvent
+import com.sun.tunnelmonitoring.events.MessageEvent
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandlerContext
@@ -35,7 +34,7 @@ class TcpServerInitializer : ChannelInitializer<SocketChannel>() {
             if(!file.exists()) file.createNewFile()
             file.writeBytes(bytes)
             println("接收数据完成")
-            EventBus.getDefault().post(MessageEvent("接收到数据，大小为：${bytes.size/1024}KB\n已保存为文件rec.txt\n保存路径：$filepath"))
+            EventBus.getDefault().post(MessageEvent("接收到数据，大小为：${bytes.size / 1024}KB\n已保存为文件rec.txt\n保存路径：$filepath"))
         }
     }
 

@@ -2,7 +2,7 @@ package com.sun.tunnelmonitoring.db.manager
 
 import org.litepal.crud.LitePalSupport
 
-data class SensorData (
+data class SensorInfo(
     var create_time:String,
     var sensor_number:Int,
     var running_state:Int,

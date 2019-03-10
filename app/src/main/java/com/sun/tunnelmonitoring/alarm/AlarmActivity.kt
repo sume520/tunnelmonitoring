@@ -9,9 +9,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
+import android.support.v7.app.AppCompatActivity
 import com.sun.tunnelmonitoring.R
 import kotlinx.android.synthetic.main.activity_alarm.*
 
@@ -33,7 +33,7 @@ class AlarmActivity : AppCompatActivity() {
         }
     }
 
-    private fun newAlert(){
+    private fun newAlert() {//发出警报通知
         val manager =
             getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager
@@ -55,17 +55,18 @@ class AlarmActivity : AppCompatActivity() {
                     .decodeResource(
                         resources, R.drawable.ic_alert))
             .build()
-        //警报
+        //警报通知
         notification.flags= Notification.FLAG_AUTO_CANCEL
         manager.notify(1, notification)
     }
 
+    ////创建通知渠道
     @TargetApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(
         channelId: String,
         channelName: String,
         importance: Int
-    ) {//创建通知渠道
+    ) {
         val channel = NotificationChannel(channelId, channelName, importance)
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE)

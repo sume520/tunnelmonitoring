@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import android.support.v4.app.Fragment
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -12,24 +13,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.squareup.okhttp.*
 import com.sun.tunnelmonitoring.MainActivity
+import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.R
+import com.sun.tunnelmonitoring.Utils.SharedPreferencesUtils
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import com.squareup.okhttp.RequestBody
-import android.os.Message
-import android.widget.Toast
-import com.sun.tunnelmonitoring.MyApplication
-import com.sun.tunnelmonitoring.Utils.SharedPreferencesUtils
 
 
 class LoginFragment : Fragment() {
     private var loginobject: JSONObject? = null
     private var loginjsonString: String? = null
-    private val URL = "http://47.107.158.26:80/user/applogin"
+    private val URL = "http://47.107.158.26:80/app/login/"
     private var account=""
     private var password=""
     private val ctx=MyApplication.getContext()
