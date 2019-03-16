@@ -1,6 +1,7 @@
 package com.sun.tunnelmonitoring
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -125,12 +126,9 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spin_sensor.setSelection(2,true)
 
         bt_baseinform.setOnClickListener {
-            /*activity!!.supportFragmentManager
-                .beginTransaction().add(R.id.activity_fragment, TreeFragment.get())
-                .addToBackStack(null)
-                .commit()*/
             val intent = Intent(context, ProjectTreeActivity::class.java)
-            startActivity(intent)
+            val option = ActivityOptions.makeSceneTransitionAnimation(activity)
+            startActivity(intent, option.toBundle())
         }
         //下拉列表适配器
         val adapter = ArrayAdapter.createFromResource(
@@ -370,10 +368,6 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
             left = maxLeft
         }
         mChartView.maximumViewport = maxViewport
-
-    }
-
-    private fun tempSetting(){
 
     }
 

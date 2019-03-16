@@ -63,32 +63,11 @@ class MainActivity : AppCompatActivity() {
         //申请权限
         EasyPermissions.requestPermissions(
             this@MainActivity,
-            "没有相应权限软件将无法工作",
+            "没有相应权限本软件将无法正常工作",
             PERMISSION_REQUEST_READ_WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-
-        /*LitePal.deleteAll<Temperature>()
-        Temperature(12f,"2018-01-11","12:00").save()
-        Temperature(14f,"2018-01-11","12:10").save()
-        Temperature(15f,"2018-01-11","12:20").save()
-        Temperature( 8f,"2018-01-11","12:30").save()
-        Temperature(10f,"2018-01-11","12:40").save()
-        Temperature(10f,"2018-01-11","12:50").save()
-        Temperature(12f,"2018-01-12","12:00").save()
-        Temperature(14f,"2018-01-12","12:10").save()
-        Temperature(15f,"2018-01-12","12:20").save()
-        Temperature(11f,"2018-01-12","12:30").save()
-        Temperature(12f,"2018-01-12","12:40").save()
-        Temperature(15f,"2018-01-12","12:50").save()*/
-
-        /*val temps=LitePal.where("date like ? and time between ? and ?","2018-01-11","12:00","12:20").find<Temperature>()
-        for(temp in temps){
-            Log.i("LitePal Qurey",temp.toString())
-        }*/
-
-
     }
 
     private inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Unit) {
@@ -108,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 println(grantResults.size)
                 for (res in grantResults) {
                     if (res == PackageManager.PERMISSION_GRANTED)
-                        Toast.makeText(this, "获取到权限", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "成功获取到权限", Toast.LENGTH_SHORT).show()
                     else {
                         Toast.makeText(this, "获取权限被拒绝，重启软件后可重新获取", Toast.LENGTH_SHORT).show()
                     }

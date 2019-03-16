@@ -18,7 +18,9 @@ import com.squareup.okhttp.*
 import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.R
 import com.sun.tunnelmonitoring.RefreshFragment
+import com.sun.tunnelmonitoring.events.ItemNameEvent
 import kotlinx.android.synthetic.main.fragment_tree.*
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONException
@@ -28,18 +30,16 @@ import java.util.*
 
 class TreeFragment : Fragment(), View.OnClickListener {
 
-
     private var lv_tree: ListView? = null
     private var adapter: TreeNodeAdapter? = null
     private var parent: TreeNode? = null
-    private val patentList = ArrayList<TreePatent>()
+    private val parentList = ArrayList<TreeParent>()
     private val mList = ArrayList<TreeInfo>()
     private var tree_jsonString: String? = null
     private var tree_object: JSONObject? = null
     internal val tree_client = OkHttpClient()
     private var itemName = ""
     private val url = "http://47.107.158.26:80/app/tree"
-    private var flag = false
 
     private val tree_messageHandler = @SuppressLint("HandlerLeak")
     object : Handler() {
@@ -53,14 +53,20 @@ class TreeFragment : Fragment(), View.OnClickListener {
             } else {
                 Toast.makeText(MyApplication.getContext(), tree_Message, Toast.LENGTH_SHORT).show()
             }
-
         }
 
     }
 
+    @SuppressLint("ResourceType")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ItemNameEvent) {
         itemName = event.itemName
+        Log.i(">>>>>>>>>>>>>>>", "点击：$itemName")
+
+        activity!!.supportFragmentManager
+            .beginTransaction().add(R.id.fg_tree, ProjectInfoFragment())
+            .addToBackStack(null)
+            .commit()
     }
 
     companion object {
@@ -89,6 +95,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        EventBus.getDefault().register(this)
         val view = inflater.inflate(R.layout.fragment_tree, container, false)
         return view
     }
@@ -110,7 +117,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
 
     //初始化工程树数据
     private fun initData() {
-        if (TreeData.isPullData) {//如果flag为true，刷新界面
+        if (TreeData.isPullData) {//如果isPullData为true，刷新界面
             val tree_data = TreeData.treeJson
             val gson = Gson()
             val jsonParser = JsonParser()
@@ -118,8 +125,8 @@ class TreeFragment : Fragment(), View.OnClickListener {
             val tree_news = ArrayList<Tree_news>()
 
             //防止重复添加
-            tree_news.clear()
-            patentList.clear()
+            //tree_news.clear()
+            parentList.clear()
             mList.clear()
 
             for (tree_new in jsonElements) {
@@ -132,7 +139,13 @@ class TreeFragment : Fragment(), View.OnClickListener {
             while (num < tree_news.size) {
                 for (i in tree_news.indices) {
                     if (tree_news[num].id == tree_news[i].parent) {
-                        patentList.add(TreePatent(tree_news[num].id, tree_news[num].parent, tree_news[num].name))
+                        parentList.add(
+                            TreeParent(
+                                tree_news[num].id,
+                                tree_news[num].parent,
+                                tree_news[num].name
+                            )
+                        )
                         break
                     }
                     if (i == tree_news.size - 1) {
@@ -149,8 +162,8 @@ class TreeFragment : Fragment(), View.OnClickListener {
 
     //添加分支节点
     private fun initTreeRoot(parent: TreeNode, parentId: Int) {
-        for (i in patentList.indices) {
-            val treeParent = patentList[i]
+        for (i in parentList.indices) {
+            val treeParent = parentList[i]
             if (parentId == treeParent.parentId) {
                 val treeNode = TreeNode(parent, treeParent.name, false)
                 initTreeRoot(treeNode, treeParent.id)
@@ -195,7 +208,6 @@ class TreeFragment : Fragment(), View.OnClickListener {
      */
     private fun postRequest(name: String, ItemName: String) {
 
-
         //建立请求表单，添加上传服务器的参数
         tree_object = null
         tree_object = JSONObject()
@@ -214,7 +226,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
             .build()
         //新建一个线程，用于得到服务器响应的参数
         Thread {
-            var tree_response: Response? = null
+            var tree_response: Response?
             try {
                 //回调
                 tree_response = tree_client.newCall(request).execute()
@@ -232,8 +244,8 @@ class TreeFragment : Fragment(), View.OnClickListener {
         pb_pulldata.visibility = View.GONE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        //EventBus.getDefault().unregister(this)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
     }
 }

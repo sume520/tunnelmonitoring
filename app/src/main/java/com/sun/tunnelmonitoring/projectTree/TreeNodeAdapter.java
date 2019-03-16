@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import com.sun.tunnelmonitoring.R;
+import com.sun.tunnelmonitoring.events.ItemNameEvent;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -25,9 +26,8 @@ public class TreeNodeAdapter extends BaseAdapter {
     private ArrayList<TreeNode> mListTree = new ArrayList<>();//要展现的节点
 
     public TreeNodeAdapter(Context context, TreeNode treeNode) {
-        Context mContext = context;
         root = treeNode;
-        mInflater = LayoutInflater.from(mContext);
+        mInflater = LayoutInflater.from(context);
         mListNode.clear();
         setTreeNode(root);
         setTreeNodeToShow(false, false, "");
@@ -37,7 +37,7 @@ public class TreeNodeAdapter extends BaseAdapter {
      *添加所有节点到mListNode列表中
      * @param node
      */
-    public void setTreeNode(TreeNode node) {
+    private void setTreeNode(TreeNode node) {
         mListNode.add(node);
         if (node.isLeaf()) return;
         List<TreeNode> child = node.getChildList();
@@ -124,15 +124,12 @@ public class TreeNodeAdapter extends BaseAdapter {
      */
     public void OnClickListener(int position, boolean isCheck, boolean state, String name) {
         TreeNode node = mListTree.get(position);
-        if (isCheck == true) {
-            EventBus.getDefault().post(new ItemNameEvent(node.getName()));
-        }
+
         if (node.isLeaf()) {
-            if (state) {
-                for (int i = 0; i < mListNode.size(); i++) {
-                    if (node.getName().equals(mListNode.get(i).getName())) {
-                        mListNode.get(i).setCheck(isCheck);
-                    }
+            for (int i = 0; i < mListNode.size(); i++) {
+                if (node.getName().equals(mListNode.get(i).getName())) {
+                    mListNode.get(i).setCheck(isCheck);
+                    EventBus.getDefault().post(new ItemNameEvent(node.getName()));
                 }
             }
         } else {

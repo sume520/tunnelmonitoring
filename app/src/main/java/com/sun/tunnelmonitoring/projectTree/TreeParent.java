@@ -4,7 +4,7 @@ package com.sun.tunnelmonitoring.projectTree;
  * Created by ZBL on 2018/12/12.
  */
 
-public class TreePatent {
+public class TreeParent {
     private int id;//对应节点的groupId
     private int parentId;//父类编号
     private String name;//名称
@@ -14,7 +14,7 @@ public class TreePatent {
      * @param parentId
      * @param name
      */
-    public TreePatent(int id, int parentId, String name) {
+    public TreeParent(int id, int parentId, String name) {
         this.id = id;
         this.parentId = parentId;
         this.name = name;
