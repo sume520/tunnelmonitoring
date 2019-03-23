@@ -16,7 +16,7 @@ import java.io.File
 class TcpServerInitializer : ChannelInitializer<SocketChannel>() {
     override fun initChannel(p0: SocketChannel?) {
         val delimiter = "&^%~".toByteArray()
-        var pipline = p0!!.pipeline()
+        val pipline = p0!!.pipeline()
         pipline.addLast(DelimiterBasedFrameDecoder(1024 * 1024 * 10, Unpooled.copiedBuffer(delimiter)))
             .addLast("decoder", ByteArrayDecoder())
             .addLast("encoder",ByteArrayEncoder())

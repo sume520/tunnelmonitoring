@@ -1,4 +1,3 @@
-import android.os.Environment
 import android.os.Handler
 import android.widget.Toast
 import com.sun.tunnelmonitoring.MyApplication
@@ -8,10 +7,9 @@ import io.netty.channel.ChannelOption
 import io.netty.channel.EventLoopGroup
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioSocketChannel
-import java.io.File
 import java.net.InetSocketAddress
 
-object TcpClient {
+object AlarmClient {
     private val HOST = "localhost"
     private val PORT = 3344
     private lateinit var group: EventLoopGroup
@@ -48,34 +46,5 @@ object TcpClient {
         else if (!channel!!.isActive)//若channel未连接，调用connect函数连接
             channel!!.connect(InetSocketAddress(HOST, PORT))
         channel!!.writeAndFlush(msg.toByte())
-    }
-
-    fun sendFile(filename: String) {
-        val filepath = Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename
-        val file = File(filepath)
-        if (!file.exists()) {
-            Toast.makeText(MyApplication.getContext(), "文件“$filename”不存在", Toast.LENGTH_SHORT).show()
-        }
-
-        Thread {
-            try {
-                val size = file.length() / 1024
-                val delimiter = "&^%~".toByteArray()//结束符
-                println("待发送数据大小：${size}Kb")
-                val bytes = file.readBytes()
-                channel!!.writeAndFlush(bytes).sync()
-                channel!!.writeAndFlush(delimiter)//最后发送结束符结束粘包
-                println("发送完成")
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-                println("发送失败")
-            }
-        }.start()
-    }
-
-    fun closeClient() {
-        channel!!.disconnect().sync()
-        channel!!.close().sync()
-        group.shutdownGracefully()
     }
 }

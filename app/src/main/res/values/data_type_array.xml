@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="data_types">
+        <item>应变值</item>
+        <item>温度</item>
+        <item>标准电压</item>
+        <item>标准电流</item>
+        <item>电阻</item>
+        <item>数字量</item>
+    </string-array>
+</resources>

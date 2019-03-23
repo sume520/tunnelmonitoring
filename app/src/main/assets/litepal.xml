@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="tunneldata" />
-    <version value="7" />
+    <version value="8" />
     <list>
         <mapping class="com.sun.tunnelmonitoring.db.manager.User" />
         <mapping class="com.sun.tunnelmonitoring.db.manager.Temperature" />
         <mapping class="com.sun.tunnelmonitoring.db.manager.SensorInfo" />
+        <mapping class="com.sun.tunnelmonitoring.db.manager.Sensor" />
     </list>
 </litepal>

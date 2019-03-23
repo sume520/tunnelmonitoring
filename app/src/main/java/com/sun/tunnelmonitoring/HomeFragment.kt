@@ -55,14 +55,18 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
     private val handler=Handler()
 
+    private val URL = "192.168.43.129/app/sensor"
+
     init {
         //产生随机数据
         generateValues()
 
         Thread {//获取传感器数据
             try {
-                val json = URL("http://www.bluelin.xyz/system/tree/VibratingDataInfo/").readText()
+                val json = URL(URL).readText()
+                println(json)
                 val gson = Gson()
+                //将json数据转化为数组
                 val sensorDataList = gson.fromJson(json, SensorInfoList::class.java)
                 LitePal.deleteAll<SensorInfo>()
                 sensorDataList.data.forEach { data ->
@@ -144,6 +148,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     //在UI线程中处理EventBus事件
     fun onUIUpdateEvent(messageEvent: MessageEvent) {
+        Toast.makeText(activity, messageEvent.message, Toast.LENGTH_SHORT).show()
     }
 
     //生成随机值

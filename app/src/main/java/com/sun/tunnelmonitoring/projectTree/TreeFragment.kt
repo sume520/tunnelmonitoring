@@ -48,20 +48,19 @@ class TreeFragment : Fragment(), View.OnClickListener {
             if (tree_Message != "10") {
                 TreeData.isPullData = true
                 TreeData.treeJson = tree_Message
-                Log.i(">>>>>>>>>>>>>>>>", tree_Message)
+                //Log.i(">>>>>>>>>>>>>>>>", tree_Message)
                 refreshUI()
             } else {
                 Toast.makeText(MyApplication.getContext(), tree_Message, Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
-    @SuppressLint("ResourceType")
+    @SuppressLint("ResourceType", "LongLogTag")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ItemNameEvent) {
         itemName = event.itemName
-        Log.i(">>>>>>>>>>>>>>>", "点击：$itemName")
+        Log.i("TreeFragment->onMessageEvent", "点击：$itemName")
 
         activity!!.supportFragmentManager
             .beginTransaction().add(R.id.fg_tree, ProjectInfoFragment())
@@ -125,7 +124,6 @@ class TreeFragment : Fragment(), View.OnClickListener {
             val tree_news = ArrayList<Tree_news>()
 
             //防止重复添加
-            //tree_news.clear()
             parentList.clear()
             mList.clear()
 
@@ -133,7 +131,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
                 val tree_news1 = gson.fromJson<Tree_news>(tree_new, Tree_news::class.java)
                 tree_news.add(tree_news1)
             }
-            Log.i(">>>>>>>>>>", tree_news.size.toString() + "")
+            //Log.i(">>>>>>>>>>", tree_news.size.toString() + "")
             //Log.i("tree_news", tree_news + "")
             var num = 0
             while (num < tree_news.size) {
@@ -193,7 +191,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
     }
 
     private fun addListener() {
-        lv_tree!!.setOnItemClickListener { parent, view, position, id ->
+        lv_tree!!.setOnItemClickListener { _, _, position, _ ->
             adapter!!.OnClickListener(
                 position,
                 false,
@@ -226,15 +224,15 @@ class TreeFragment : Fragment(), View.OnClickListener {
             .build()
         //新建一个线程，用于得到服务器响应的参数
         Thread {
-            var tree_response: Response?
+            val tree_response: Response?
             try {
                 //回调
                 tree_response = tree_client.newCall(request).execute()
-                if (tree_response!!.isSuccessful()) {
+                if (tree_response!!.isSuccessful) {
                     //将服务器响应的参数response.body().string())发送到hanlder中，并更新ui
                     tree_messageHandler.obtainMessage(1, tree_response.body().string()).sendToTarget()
                 } else {
-                    throw IOException("Unexpected code:" + tree_response)
+                    throw IOException("Unexpected code:$tree_response")
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
