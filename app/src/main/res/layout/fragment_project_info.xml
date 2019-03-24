@@ -12,13 +12,13 @@
         android:layout_height="250dp">
 
         <lecho.lib.hellocharts.view.LineChartView
-            android:id="@+id/mChartView"
+            android:id="@+id/chartView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="16dp" />
 
         <ProgressBar
-            android:id="@+id/progress"
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -39,11 +39,11 @@
             android:textSize="16sp" />
 
         <Spinner
-            android:id="@+id/spin_sensor"
-
+            android:id="@+id/spiner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp" />
+
     </LinearLayout>
 
     <TextView

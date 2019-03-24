@@ -19,6 +19,7 @@ import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.R
 import com.sun.tunnelmonitoring.RefreshFragment
 import com.sun.tunnelmonitoring.events.ItemNameEvent
+import com.sun.tunnelmonitoring.events.RefreshEvent
 import kotlinx.android.synthetic.main.fragment_tree.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -39,9 +40,9 @@ class TreeFragment : Fragment(), View.OnClickListener {
     private var tree_object: JSONObject? = null
     internal val tree_client = OkHttpClient()
     private var itemName = ""
-    private val url = "http://47.107.158.26:80/app/tree"
+    private val url = "http://future.ngrok.xiaomiqiu.cn/app/tree"
 
-    private val tree_messageHandler = @SuppressLint("HandlerLeak")
+    private val treeHandler = @SuppressLint("HandlerLeak")
     object : Handler() {
         override fun handleMessage(tree_msg: Message) {
             val tree_Message = tree_msg.obj as String
@@ -62,8 +63,13 @@ class TreeFragment : Fragment(), View.OnClickListener {
         itemName = event.itemName
         Log.i("TreeFragment->onMessageEvent", "点击：$itemName")
 
+        val fragment = ProjectInfoFragment()
+        val bundle = Bundle()
+        bundle.putString("itemName", itemName)
+        fragment.arguments = bundle
+
         activity!!.supportFragmentManager
-            .beginTransaction().add(R.id.fg_tree, ProjectInfoFragment())
+            .beginTransaction().add(R.id.fg_tree, fragment)
             .addToBackStack(null)
             .commit()
     }
@@ -85,6 +91,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
     }
 
     private fun refreshUI() {//刷新UI
+
         activity!!.supportFragmentManager
             .beginTransaction().replace(R.id.fg_tree, RefreshFragment())
             .commit()
@@ -95,6 +102,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         EventBus.getDefault().register(this)
+        EventBus.getDefault().post(RefreshEvent(false))
         val view = inflater.inflate(R.layout.fragment_tree, container, false)
         return view
     }
@@ -131,8 +139,6 @@ class TreeFragment : Fragment(), View.OnClickListener {
                 val tree_news1 = gson.fromJson<Tree_news>(tree_new, Tree_news::class.java)
                 tree_news.add(tree_news1)
             }
-            //Log.i(">>>>>>>>>>", tree_news.size.toString() + "")
-            //Log.i("tree_news", tree_news + "")
             var num = 0
             while (num < tree_news.size) {
                 for (i in tree_news.indices) {
@@ -217,6 +223,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
 
         tree_jsonString = null
         tree_jsonString = tree_object!!.toString()
+        EventBus.getDefault().post(RefreshEvent(true))
         val body = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), tree_jsonString)
         val request = Request.Builder()
             .url(url)
@@ -224,18 +231,20 @@ class TreeFragment : Fragment(), View.OnClickListener {
             .build()
         //新建一个线程，用于得到服务器响应的参数
         Thread {
-            val tree_response: Response?
+            val response: Response?
             try {
                 //回调
-                tree_response = tree_client.newCall(request).execute()
-                if (tree_response!!.isSuccessful) {
+                response = tree_client.newCall(request).execute()
+                if (response!!.isSuccessful) {
                     //将服务器响应的参数response.body().string())发送到hanlder中，并更新ui
-                    tree_messageHandler.obtainMessage(1, tree_response.body().string()).sendToTarget()
+                    treeHandler.obtainMessage(1, response.body().string()).sendToTarget()
                 } else {
-                    throw IOException("Unexpected code:$tree_response")
+                    throw IOException("Unexpected code:$response")
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
+                EventBus.getDefault().post(RefreshEvent(flag = false))
+                treeHandler.post { Toast.makeText(MyApplication.getContext(), "获取工程树数据失败", Toast.LENGTH_SHORT).show() }
             }
         }.start()
 

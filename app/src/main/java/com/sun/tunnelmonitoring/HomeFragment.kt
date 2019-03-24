@@ -161,7 +161,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun initChart(){
-        //初始化图标
+        //初始化图表
         mChartView.lineChartData = null
         axisXname = null
         axisYname = null
