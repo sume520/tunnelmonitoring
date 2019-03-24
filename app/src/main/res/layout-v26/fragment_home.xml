@@ -11,15 +11,14 @@
         android:id="@+id/tv_init"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_margin="16dp"
         android:text="初始化"
         android:textColor="#75000000"
         android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/ll_init"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
