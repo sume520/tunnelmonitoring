@@ -28,16 +28,32 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var itemName: String
     private lateinit var axisXname: String
     private lateinit var axisYname: String
-    val colors =
+    private val colors =
         arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
+    private val sensorTypes = hashMapOf(
+            "振弦" to 'F',
+            "温度" to 'T',
+            "标准电压" to 'V',
+            "标准电流" to 'I',
+            "电阻" to 'R',
+            "数字量" to 'X')
+
+    private val dataSignal = hashMapOf(
+            "振弦" to "Hz",
+            "温度" to "℃",
+            "标准电压" to "V",
+            "标准电流" to 'A',
+            "电阻" to 'Ω',
+            "数字量" to ""
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        itemName = arguments!!.getString("itemName")
-        Log.i("onCreateView", "itemName: $itemName")
-        dataType = resources.getStringArray(R.array.data_types)
+        itemName = arguments!!.getString("itemName")//获取节点名
+        dataType = resources.getStringArray(R.array.data_types)//获取资源数组
+
         return inflater.inflate(R.layout.fragment_project_info, container, false)
     }
 
@@ -47,15 +63,17 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val type = dataType[position]
         Log.i("onItemSelected", "position: $position, id: $id, data type: $type")
-        progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE//显示进度条
         OkHttpUtils
             .post()
             .url("http://future.ngrok.xiaomiqiu.cn/app/data")
             .addParams("number", itemName)
-            .addParams("type", type)
+                .addParams("type", sensorTypes[type].toString())
             .build()
             .execute(DataCallback())
+        Log.i("onItemSelected", sensorTypes[type].toString())
         axisXname = type
+        axisYname = dataSignal[type].toString()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -65,6 +83,7 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
             context,
             R.array.data_types, android.R.layout.simple_spinner_item
         )
+        tv_nodename.text = itemName
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spiner.adapter = adapter
         spiner.onItemSelectedListener = this
@@ -75,10 +94,16 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
             Log.i("DataCallback", response)
             val gson = Gson()
             val datas = gson.fromJson(response, SensorDataList::class.java)
+            if (datas.data.size == 0) {
+                println("获取数据为空")
+                initChart()
+            } else {
+                setChartData(datas.data)
+            }
             datas.data.forEach {
                 println(it.time + " " + it.data)
             }
-            setChartData(datas.data)
+            progressBar.visibility = View.GONE
         }
 
         override fun onError(request: Request?, e: Exception?) {
@@ -87,7 +112,10 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    //初始化图表
     private fun initChart() {
+        axisXname = ""
+        axisYname = ""
         setViewPort()
     }
 
@@ -108,7 +136,6 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
             times.add(strs[1].substring(0, 5))
             if (data.data > maxValue)
                 maxValue = data.data
-            Log.i("setChart", "date: ${strs[0]} time: ${strs[1]}")
         }
 
         //x轴标签
@@ -116,7 +143,7 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         for (i in 0 until numberOfPoints) {
             var str: String
 
-            if (times[i] == "12:00")
+            if (times[i] == "00:00")
                 str = dates[i].substring(5)
             else
                 str = times[i]
@@ -163,7 +190,7 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         axisX.maxLabelChars = 5
         axisX.name = axisXname
         axisX.setHasTiltedLabels(true)
-        axisY.name = ""
+        axisY.name = axisYname
 
         //填充数据
         val data = LineChartData()
@@ -174,19 +201,9 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         chartView.lineChartData = data
 
         //设置X、Y轴范围
-        val maxViewPoint = Viewport(chartView.maximumViewport)
-        val v = Viewport()
-        v.bottom = 0f
-        v.top = maxValue.toFloat() + 0.1f
-        v.left = 0f
-        v.right = 10f
-        maxViewPoint.top = maxValue.toFloat() + 0.1f
-        maxViewPoint.bottom = v.bottom - 0.1f
-        maxViewPoint.right = numberOfPoints.toFloat() + 0.1f
-        chartView.maximumViewport = maxViewPoint
-        chartView.setCurrentViewportWithAnimation(v)
-
-        progressBar.visibility = View.GONE
+        val bais = maxValue / 10.toFloat()
+        setViewPort(maxValue.toFloat() + bais, 0f, 0f, 10f,
+                maxValue.toFloat() + bais, -0.1f, 0f, numberOfPoints.toFloat() + 0.1f)
     }
 
     //XY轴设置
