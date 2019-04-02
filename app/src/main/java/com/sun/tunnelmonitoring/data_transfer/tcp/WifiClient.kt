@@ -4,7 +4,7 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.sun.tunnelmonitoring.MyApplication
-import com.sun.tunnelmonitoring.Utils.getAPIP
+import com.sun.tunnelmonitoring.utils.getAPIP
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.Channel
 import io.netty.channel.ChannelOption

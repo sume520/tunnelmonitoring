@@ -1,4 +1,4 @@
-package com.sun.tunnelmonitoring.Utils
+package com.sun.tunnelmonitoring.utils
 
 import android.content.Context
 import android.content.SharedPreferences

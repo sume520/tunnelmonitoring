@@ -10,6 +10,10 @@ object AlarmService : IntentService("AlarmService") {
     private var flag = false
     private lateinit var client: Socket
 
+    init {
+
+    }
+
     override fun onHandleIntent(intent: Intent?) {
         flag = true
 

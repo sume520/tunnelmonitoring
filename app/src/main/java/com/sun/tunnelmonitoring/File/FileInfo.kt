@@ -3,13 +3,13 @@ import java.security.MessageDigest
 
 data class FileInfo(var filename: String, var filesize: Long, var filedata: ByteArray) : Serializable {
     fun getMD5(): ByteArray? {
-        var md = MessageDigest.getInstance("MD5")
-        var md5 = md.digest(filedata)
+        val md = MessageDigest.getInstance("MD5")
+        val md5 = md.digest(filedata)
         return md5
     }
 
     override fun equals(other: Any?): Boolean {
-        return (other as FileInfo).getMD5() == this.getMD5()
+        return (other as FileInfo).getMD5()!!.contentEquals(this.getMD5()!!)
     }
 
     override fun toString(): String {

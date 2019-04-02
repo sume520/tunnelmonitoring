@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentTransaction
 import com.sun.tunnelmonitoring.MainActivity
 import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.R
-import com.sun.tunnelmonitoring.Utils.SharedPreferencesUtils
+import com.sun.tunnelmonitoring.utils.SharedPreferencesUtils
 
 class LoginActivity : AppCompatActivity() {
 

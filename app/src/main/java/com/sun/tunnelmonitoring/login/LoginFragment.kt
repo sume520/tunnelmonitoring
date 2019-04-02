@@ -19,7 +19,8 @@ import com.sun.tunnelmonitoring.LOGINURL
 import com.sun.tunnelmonitoring.MainActivity
 import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.R
-import com.sun.tunnelmonitoring.Utils.SharedPreferencesUtils
+import com.sun.tunnelmonitoring.utils.SharedPreferencesUtils
+import com.sun.tunnelmonitoring.utils.toast
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -135,8 +136,14 @@ class LoginFragment : Fragment() {
                     handler.obtainMessage(1, json).sendToTarget()
                 } else {
                     Log.e("postRequest","登录出错")
-                    handler.post { Toast.makeText(context,"登录失败！！",Toast.LENGTH_SHORT).show() }
-                    throw IOException("Unexpected code:" + response)
+                    handler.post { Toast.makeText(MyApplication.getContext(),"登录失败",Toast.LENGTH_SHORT).show() }
+
+                    //假登录
+                    handler.obtainMessage(1, "0").sendToTarget()
+                    //handler.post { Toast.makeText(MyApplication.getContext(),"模拟登录",Toast.LENGTH_SHORT).show() }
+                    //toast("模拟登录")
+                    handler.post { toast("模拟登录") }
+                    throw IOException("Unexpected code:$response")
                 }
             } catch (e: IOException) {
                 e.printStackTrace()

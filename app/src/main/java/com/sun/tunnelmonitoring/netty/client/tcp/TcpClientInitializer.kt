@@ -1,4 +1,5 @@
 import android.os.Environment
+import com.sun.tunnelmonitoring.File.saveToFile
 import com.sun.tunnelmonitoring.events.MessageEvent
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandlerContext
@@ -34,15 +35,6 @@ class TcpClientInitializer : ChannelInitializer<SocketChannel>() {
             ctx!!.channel().close()
             ctx.close().sync()
         }
-    }
-
-    private fun saveToFile(bytes: ByteArray, filename: String) {
-        //保存到sd卡根目录rec.txt文件中
-        val filepath = Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + "$filename.txt"
-        val file = File(filepath)
-        //检测文件是否存在
-        if (!file.exists()) file.createNewFile()
-        file.writeBytes(bytes)
     }
 
 }
