@@ -20,7 +20,7 @@ import java.net.URLDecoder
 class RegisterFragment : Fragment() {
     private var jsonObject: JSONObject? = null
     private var jsonString: String? = null
-    private val URL = "http://47.107.158.26:80/user/appregister/"
+    private val URL = "http://47.107.158.26:80/user/app/register/"
     var handler = Handler(Handler.Callback { msg ->
         var m = msg.obj as String
         try {

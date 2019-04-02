@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.squareup.okhttp.*
+import com.sun.tunnelmonitoring.LOGINURL
 import com.sun.tunnelmonitoring.MainActivity
 import com.sun.tunnelmonitoring.MyApplication
 import com.sun.tunnelmonitoring.R
@@ -118,12 +119,12 @@ class LoginFragment : Fragment() {
         loginjsonString = loginobject.toString()
         val body = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), loginjsonString)
         val request = Request.Builder()
-                .url(URL)
+                .url(LOGINURL)
                 .post(body)
                 .build()
         //新建一个线程，用于得到服务器响应的参数
         Thread {
-            var response: Response
+            val response: Response
             try {
                 //回调
                 response = client.newCall(request).execute()
@@ -148,7 +149,7 @@ class LoginFragment : Fragment() {
         override fun handleMessage(msg: Message) {
             if (msg.what == 1) {
                 val ReturnMessage = msg.obj as String
-                if (ReturnMessage == "10") {
+                if (ReturnMessage == "100") {
                     Toast.makeText(MyApplication.getContext(), "密码错误或账户未激活", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.i("xxxaccount", SharedPreferencesUtils.getaccount(ctx) + "")

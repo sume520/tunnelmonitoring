@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.squareup.okhttp.*
 import com.sun.tunnelmonitoring.MyApplication
+import com.sun.tunnelmonitoring.PROJECTTREEURL
 import com.sun.tunnelmonitoring.R
 import com.sun.tunnelmonitoring.RefreshFragment
 import com.sun.tunnelmonitoring.events.ItemNameEvent
@@ -49,7 +50,6 @@ class TreeFragment : Fragment(), View.OnClickListener {
             if (tree_Message != "10") {
                 TreeData.isPullData = true
                 TreeData.treeJson = tree_Message
-                //Log.i(">>>>>>>>>>>>>>>>", tree_Message)
                 refreshUI()
             } else {
                 Toast.makeText(MyApplication.getContext(), tree_Message, Toast.LENGTH_SHORT).show()
@@ -226,7 +226,7 @@ class TreeFragment : Fragment(), View.OnClickListener {
         EventBus.getDefault().post(RefreshEvent(true))
         val body = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), tree_jsonString)
         val request = Request.Builder()
-            .url(url)
+            .url(PROJECTTREEURL)
             .post(body)
             .build()
         //新建一个线程，用于得到服务器响应的参数

@@ -25,7 +25,7 @@ object TcpClient {
             b = Bootstrap()
             b.group(group).channel(NioSocketChannel::class.java)
                 .option(ChannelOption.SO_SNDBUF, 1024 * 1024 * 30)
-                .handler(AlarmClientInitializer())
+                .handler(WifiClientInitializer())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000 * 10)//设置连接超时时间
                 .option(ChannelOption.SO_KEEPALIVE, true)

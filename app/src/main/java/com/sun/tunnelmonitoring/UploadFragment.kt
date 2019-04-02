@@ -1,7 +1,7 @@
 package com.sun.tunnelmonitoring
 
 
-import AlarmClient
+import WifiClient
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -23,7 +23,7 @@ class UploadFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         bt_pulldata.setOnClickListener {
-            AlarmClient.sendMessage("get data")
+            WifiClient.sendMessage("get data")
         }
     }
 

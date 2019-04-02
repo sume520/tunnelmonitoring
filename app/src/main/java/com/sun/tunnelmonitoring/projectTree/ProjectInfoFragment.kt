@@ -13,7 +13,10 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.squareup.okhttp.Request
+import com.sun.tunnelmonitoring.MyApplication
+import com.sun.tunnelmonitoring.NODEDATAURL
 import com.sun.tunnelmonitoring.R
 import com.zhy.http.okhttp.OkHttpUtils
 import com.zhy.http.okhttp.callback.StringCallback
@@ -29,7 +32,7 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var axisXname: String
     private lateinit var axisYname: String
     private val colors =
-        arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
+            arrayOf(0xFF2196F3.toInt(), 0xFF66BB6A.toInt(), 0xFF673AB7.toInt(), 0xFFFFEB3B.toInt())
     private val sensorTypes = hashMapOf(
             "振弦" to 'F',
             "温度" to 'T',
@@ -48,8 +51,8 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
     )
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         itemName = arguments!!.getString("itemName")//获取节点名
         dataType = resources.getStringArray(R.array.data_types)//获取资源数组
@@ -65,12 +68,13 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         Log.i("onItemSelected", "position: $position, id: $id, data type: $type")
         progressBar.visibility = View.VISIBLE//显示进度条
         OkHttpUtils
-            .post()
-            .url("http://future.ngrok.xiaomiqiu.cn/app/data")
-            .addParams("number", itemName)
+                .post()
+                //.url("http://future.ngrok.xiaomiqiu.cn/app/data")
+                .url(NODEDATAURL)
+                .addParams("number", itemName)
                 .addParams("type", sensorTypes[type].toString())
-            .build()
-            .execute(DataCallback())
+                .build()
+                .execute(DataCallback())
         Log.i("onItemSelected", sensorTypes[type].toString())
         axisXname = type
         axisYname = dataSignal[type].toString()
@@ -80,8 +84,8 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onActivityCreated(savedInstanceState)
         //下拉列表适配器
         val adapter = ArrayAdapter.createFromResource(
-            context,
-            R.array.data_types, android.R.layout.simple_spinner_item
+                context,
+                R.array.data_types, android.R.layout.simple_spinner_item
         )
         tv_nodename.text = itemName
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -93,15 +97,21 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         override fun onResponse(response: String?) {
             Log.i("DataCallback", response)
             val gson = Gson()
-            val datas = gson.fromJson(response, SensorDataList::class.java)
-            if (datas.data.size == 0) {
-                println("获取数据为空")
-                initChart()
-            } else {
-                setChartData(datas.data)
-            }
-            datas.data.forEach {
-                println(it.time + " " + it.data)
+            try {
+                val datas =
+                        gson.fromJson(response, SensorDataList::class.java)
+                if (datas.data.isEmpty()) {
+                    println("获取数据为空")
+                    initChart()
+                } else {
+                    setChartData(datas.data)
+                }
+                datas.data.forEach {
+                    println(it.time + " " + it.data)
+                }
+            } catch (e: JsonSyntaxException) {
+                Log.e("DataCallBack", e.message)
+                Toast.makeText(MyApplication.getContext(), "数据解析出错", Toast.LENGTH_SHORT).show()
             }
             progressBar.visibility = View.GONE
         }
@@ -212,8 +222,8 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val axisY = Axis()
 
         fun setAxisValues(
-            xValues: ArrayList<AxisValue>? = null,
-            yValues: ArrayList<AxisValue>? = null
+                xValues: ArrayList<AxisValue>? = null,
+                yValues: ArrayList<AxisValue>? = null
         ) {
             if (xValues != null) {
                 axisX.values = xValues
@@ -244,14 +254,14 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun setViewPort(
-        cTop: Float = 0f,
-        cBotton: Float = 0f,
-        cLeft: Float = 0f,
-        cRight: Float = 0f,
-        maxTop: Float = 0f,
-        maxButton: Float = 0f,
-        maxLeft: Float = 0f,
-        maxRight: Float = 0f
+            cTop: Float = 0f,
+            cBotton: Float = 0f,
+            cLeft: Float = 0f,
+            cRight: Float = 0f,
+            maxTop: Float = 0f,
+            maxButton: Float = 0f,
+            maxLeft: Float = 0f,
+            maxRight: Float = 0f
     ) {
         val viewport = Viewport()
         viewport.apply {
