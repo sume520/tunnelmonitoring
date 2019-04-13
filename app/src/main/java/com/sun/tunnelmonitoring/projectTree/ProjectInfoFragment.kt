@@ -69,7 +69,6 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         progressBar.visibility = View.VISIBLE//显示进度条
         OkHttpUtils
                 .post()
-                //.url("http://future.ngrok.xiaomiqiu.cn/app/data")
                 .url(NODEDATAURL)
                 .addParams("number", itemName)
                 .addParams("type", sensorTypes[type].toString())
@@ -106,9 +105,9 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 } else {
                     setChartData(datas.data)
                 }
-                datas.data.forEach {
+                /*datas.data.forEach {
                     println(it.time + " " + it.data)
-                }
+                }*/
             } catch (e: JsonSyntaxException) {
                 Log.e("DataCallBack", e.message)
                 Toast.makeText(MyApplication.getContext(), "数据解析出错", Toast.LENGTH_SHORT).show()
@@ -253,7 +252,7 @@ class ProjectInfoFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    private fun setViewPort(
+    private fun setViewPort(//设置图表显示范围
             cTop: Float = 0f,
             cBotton: Float = 0f,
             cLeft: Float = 0f,

@@ -17,7 +17,7 @@ object AlarmServer {
     private var acceptGroup: NioEventLoopGroup?=null
     private var channel: Channel?=null
 
-    fun start(host: String = HOST, port: Int = PORT) {
+    fun start(port: Int = PORT) {
         bootstrap= Bootstrap()
         acceptGroup= NioEventLoopGroup()
         bootstrap!!.group(acceptGroup)
@@ -28,11 +28,10 @@ object AlarmServer {
         Thread {
             try {
                 if(channel==null|| !channel!!.isOpen) {
-                    channel = bootstrap!!.bind(host, port).sync().channel()
+                    channel = bootstrap!!.bind(HOST, port).sync().channel()
                 }
-                println("UdpServer start success $port")
                 handler.post{Toast.makeText(MyApplication.getContext(), "已启动udp服务器", Toast.LENGTH_SHORT).show()}
-                Log.d("udpserver", "已启动udp服务器")
+                Log.d("Alarmserver", "已启动udp服务器")
             } catch (e:Exception){
                 Log.i("AlarmServer","启动服务器错误")
             }

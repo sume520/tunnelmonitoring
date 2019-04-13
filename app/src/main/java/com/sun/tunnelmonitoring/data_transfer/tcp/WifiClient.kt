@@ -24,7 +24,7 @@ object WifiClient {
 
     fun start(): Int {
         var flag: Int
-        if (isConnectToAP())
+        if (isConnectToAP())//检测是否连接wifi，否者返回2
             HOST = getAPIP()
         else {
             return 2
@@ -65,7 +65,7 @@ object WifiClient {
         //若服务器没有启动，先启动服务器
         if (channel == null) {
             val flag=this.start()
-            if (flag == 2) {
+            if (flag == 2) {//未连接wifi
                 handler.post {
                     Toast.makeText(
                             MyApplication.getContext(),
@@ -75,7 +75,7 @@ object WifiClient {
                 }
                 return
             }
-            else if(flag==1){
+            else if(flag==1){//连接服务器出错
                 handler.post {
                     Toast.makeText(
                             MyApplication.getContext(),
