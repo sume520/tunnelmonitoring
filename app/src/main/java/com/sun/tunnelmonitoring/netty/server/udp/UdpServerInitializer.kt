@@ -24,7 +24,7 @@ class UdpServerInitializer : ChannelInitializer<NioDatagramChannel>() {
             val bytes = ByteArray(readable)
             buf.readBytes(bytes)
             println("接收到的数据大小：${bytes.size / 1024}Kb")
-            val fileInfo = ByteObjectConverter.byteToObject(bytes) as FileInfo
+           /* val fileInfo = ByteObjectConverter.byteToObject(bytes) as FileInfo
             val filetype = fileInfo.filename.split('.')[1]
             val filepath= Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + "rec.${filetype}"
             val file = File(filepath)
@@ -34,10 +34,9 @@ class UdpServerInitializer : ChannelInitializer<NioDatagramChannel>() {
             val size = bytes.size / 1024
             println("文件大小：${size}Kb")
             EventBus.getDefault().post(MessageEvent(fileInfo.toString()))
-
             val sendbuf=Unpooled.copiedBuffer("已接收到文件：${fileInfo.filename}",CharsetUtil.UTF_8)
             val dp=DatagramPacket(sendbuf,packet.sender())
-            ctx!!.writeAndFlush(dp)
+            ctx!!.writeAndFlush(dp)*/
         }
     }
 }

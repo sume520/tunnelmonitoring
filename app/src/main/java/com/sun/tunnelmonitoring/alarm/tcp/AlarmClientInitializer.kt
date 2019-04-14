@@ -7,6 +7,7 @@ import io.netty.channel.socket.SocketChannel
 import io.netty.handler.codec.DelimiterBasedFrameDecoder
 import io.netty.handler.codec.bytes.ByteArrayDecoder
 import io.netty.handler.codec.bytes.ByteArrayEncoder
+import io.netty.handler.timeout.IdleStateEvent
 import org.greenrobot.eventbus.EventBus
 
 class AlarmClientInitializer : ChannelInitializer<SocketChannel>() {
@@ -24,6 +25,13 @@ class AlarmClientInitializer : ChannelInitializer<SocketChannel>() {
         override fun channelRead(ctx: ChannelHandlerContext?, msg: Any?) {
             super.channelRead(ctx, msg)
             EventBus.getDefault().post(AlarmEvent(msg.toString()))
+        }
+
+        override fun userEventTriggered(ctx: ChannelHandlerContext?, evt: Any?) {
+            super.userEventTriggered(ctx, evt)
+            if(evt is IdleStateEvent){
+
+            }
         }
     }
 }

@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        AlarmServer.start()
+        AlarmTCPServer.start()
 
         supportFragmentManager.inTransaction { add(R.id.activity_fragment, HomeFragment.get()) }
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)

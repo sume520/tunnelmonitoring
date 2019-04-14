@@ -11,7 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel
 import java.net.InetSocketAddress
 
 object AlarmClient {
-    private val HOST = "localhost"
+    private val HOST = "192.168.1.143"
     private val PORT = 3344
     private lateinit var group: EventLoopGroup
     private lateinit var b: Bootstrap
@@ -19,64 +19,64 @@ object AlarmClient {
     private val handler = Handler()
 
     fun start(): Boolean {
-        var flag:Boolean
+        var flag: Boolean
         group = NioEventLoopGroup()
         try {
             b = Bootstrap()
             b.group(group).channel(NioSocketChannel::class.java)
-                    .option(ChannelOption.SO_SNDBUF, 1024 * 1024 * 30)
-                    .handler(AlarmClientInitializer())
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000 * 10)//设置连接超时时间
-                    .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.SO_SNDBUF, 1024 * 1024 * 30)
+                .handler(AlarmClientInitializer())
+                .option(ChannelOption.TCP_NODELAY, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000 * 10)//设置连接超时时间
+                .option(ChannelOption.SO_KEEPALIVE, true)
 
             channel = b.connect(HOST, PORT).sync().channel()
-            Log.e("WifiClient","连接服务器失败")
+            Log.e("WifiClient", "连接服务器失败")
             //handler.post { Toast.makeText(MyApplication.getContext(), "连接到服务器", Toast.LENGTH_SHORT).show() }
             flag = true
         } catch (e: Exception) {
-            Log.e("WifiClient","连接服务器失败")
+            Log.e("WifiClient", "连接服务器失败")
             flag = false
-        } finally {
-            //group.shutdownGracefully()
-            //println("客户端已关闭")
         }
         return flag
     }
 
     fun sendMessage(msg: String) {//发送消息
         //若服务器没有启动，先启动服务器
-        if (channel == null){
+        if (channel == null) {
             if (!this.start()) {
                 handler.post {
                     Toast.makeText(
-                            MyApplication.getContext(),
-                            "发送失败，网络未连接",
-                            Toast.LENGTH_SHORT)
-                            .show()
+                        MyApplication.getContext(),
+                        "发送失败，网络未连接",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
                 return
             }
-            } else if (!channel!!.isActive) {//若channel未连接，调用connect函数连接
-                val future = channel!!.connect(InetSocketAddress(HOST, PORT))
-                if (!future.isSuccess){
-                    handler.post {
-                        Toast.makeText(
-                                MyApplication.getContext(),
-                                "发送失败，网络连接失败",
-                                Toast.LENGTH_SHORT)
-                                .show()
-                    }
-                    return
+        } else if (!channel!!.isActive) {//若channel未连接，调用connect函数连接
+            val future = channel!!.connect(InetSocketAddress(HOST, PORT))
+            if (!future.isSuccess) {
+                handler.post {
+                    Toast.makeText(
+                        MyApplication.getContext(),
+                        "发送失败，网络连接失败",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
+                return
             }
-        if(channel!!.writeAndFlush(msg.toByte()).isSuccess){
+        }
+        if (channel!!.writeAndFlush(msg.toByte()).isSuccess) {
             handler.post {
                 Toast.makeText(
-                        MyApplication.getContext(),
-                        "发送成功",
-                        Toast.LENGTH_SHORT)
-                        .show()
+                    MyApplication.getContext(),
+                    "发送成功",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
             }
         }
 

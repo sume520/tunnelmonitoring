@@ -8,7 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import java.util.concurrent.TimeUnit
 
-object TcpServer {
+object AlarmTCPServer {
     private val HOST = "localhost"
     private val PORT = 3344
     private lateinit var b: ServerBootstrap
@@ -26,7 +26,7 @@ object TcpServer {
                 b = ServerBootstrap()
                 b.group(bossGroup, workGroup)
                     .channel(NioServerSocketChannel::class.java)
-                    .childHandler(TcpServerInitializer())
+                    .childHandler(AlarmTCPServerInitializer())
                     .option(ChannelOption.SO_RCVBUF, 1024 * 1024 * 30)
 
                 println("服务器已启动")

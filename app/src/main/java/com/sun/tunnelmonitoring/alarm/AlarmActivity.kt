@@ -13,7 +13,11 @@ import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
 import com.sun.tunnelmonitoring.R
+import com.sun.tunnelmonitoring.events.AlarmEvent
 import kotlinx.android.synthetic.main.activity_alarm.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class AlarmActivity : AppCompatActivity() {
 
@@ -21,6 +25,8 @@ class AlarmActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alarm)
         title="数据警报"
+
+        EventBus.getDefault().register(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = "alert"
             val channelName = "警报"
@@ -73,5 +79,15 @@ class AlarmActivity : AppCompatActivity() {
                     as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public fun dealAlarmEvent(message:AlarmEvent){
+
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 }

@@ -3,11 +3,13 @@ import android.util.Log
 import android.widget.Toast
 import com.sun.tunnelmonitoring.MyApplication
 import io.netty.bootstrap.Bootstrap
-import io.netty.channel.Channel
-import io.netty.channel.ChannelOption
-import io.netty.channel.FixedRecvByteBufAllocator
+import io.netty.buffer.Unpooled
+import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.socket.DatagramPacket
 import io.netty.channel.socket.nio.NioDatagramChannel
+import io.netty.util.CharsetUtil
+import java.lang.Exception
 
 object AlarmServer {
     private val handler=Handler()
@@ -21,25 +23,46 @@ object AlarmServer {
         bootstrap= Bootstrap()
         acceptGroup= NioEventLoopGroup()
         bootstrap!!.group(acceptGroup)
-            .channel(NioDatagramChannel::class.java)
+            .channel(NioDatagramChannel::class.java as Class<out Channel>?
+            )
             .option(ChannelOption.SO_BROADCAST, true)
             .option(ChannelOption.RCVBUF_ALLOCATOR, FixedRecvByteBufAllocator(65535))
-            .handler(AlarmServerInitializer.AlarmServerHandler())
+            .handler(object:ChannelInitializer<NioDatagramChannel>(){
+                override fun initChannel(ch: NioDatagramChannel?) {
+                    val pipeline = ch!!.pipeline()
+                    pipeline.addLast("handler", AlarmServerHandler())
+                }
+            })
         Thread {
             try {
                 if(channel==null|| !channel!!.isOpen) {
                     channel = bootstrap!!.bind(HOST, port).sync().channel()
                 }
-                handler.post{Toast.makeText(MyApplication.getContext(), "已启动udp服务器", Toast.LENGTH_SHORT).show()}
-                Log.d("Alarmserver", "已启动udp服务器")
+                println("UdpServer start success $port")
+                handler.post{Toast.makeText(MyApplication.getContext(), "已启动警报服务器", Toast.LENGTH_SHORT).show()}
+                Log.i("Alarmserver", "已启动警报服务器")
             } catch (e:Exception){
-                Log.i("AlarmServer","启动服务器错误")
+                Log.i("AlarmTCPServer","启动服务器错误")
             }
         }.start()
     }
 
     fun getChannel(): Channel {
         return channel!!
+    }
+
+    class AlarmServerHandler : SimpleChannelInboundHandler<DatagramPacket>() {
+        override fun channelRead0(ctx: ChannelHandlerContext?, packet: DatagramPacket?) {
+            Log.i("ChannelRead","接收到数据")
+            val buf=packet!!.content()
+            val readable=buf.readableBytes()
+            val bytes=ByteArray(readable)
+            buf.readBytes(bytes)
+            Log.i("ChannelRead",bytes.toString(CharsetUtil.UTF_8))
+            val sendbuf= Unpooled.copiedBuffer("已接收到数据", CharsetUtil.UTF_8)
+            val dp= DatagramPacket(sendbuf,packet.sender())
+            ctx!!.writeAndFlush(dp)
+        }
     }
 
 }

@@ -13,9 +13,9 @@ object ClientUtil {
     fun send(msg: String) {
 
         Thread {
-            var buf = ByteArray(1024 * 8 * 64)
-            var packet_send = DatagramPacket(msg.toByteArray(), msg.length)
-            var packet_recv = DatagramPacket(buf, 1024 * 8 * 64)
+            val buf = ByteArray(1024 * 8 * 64)
+            val packet_send = DatagramPacket(msg.toByteArray(), msg.length)
+            val packet_recv = DatagramPacket(buf, 1024 * 8 * 64)
             val s = DatagramSocket(addr)
             try {
                 s.send(packet_send)

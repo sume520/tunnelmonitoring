@@ -63,7 +63,7 @@ object UdpUtil {
 
     fun String.Hex2Byte(): ByteArray? {
         var hexString = this
-        if (hexString == null || hexString == "") {
+        if (hexString == "") {
             return null
         }
         hexString = hexString.toUpperCase()
