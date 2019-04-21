@@ -6,7 +6,7 @@ import org.litepal.extension.deleteAll
 import org.litepal.extension.find
 import org.litepal.extension.findAll
 
-
+//unused
 object UserDao{
     fun queryAll():List<User>?{
         return LitePal.findAll<User>()

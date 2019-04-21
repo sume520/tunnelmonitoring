@@ -24,14 +24,8 @@ class AlarmClientInitializer : ChannelInitializer<SocketChannel>() {
     inner class TcpClientHandler : ChannelInboundHandlerAdapter() {
         override fun channelRead(ctx: ChannelHandlerContext?, msg: Any?) {
             super.channelRead(ctx, msg)
-            EventBus.getDefault().post(AlarmEvent(msg.toString()))
+
         }
 
-        override fun userEventTriggered(ctx: ChannelHandlerContext?, evt: Any?) {
-            super.userEventTriggered(ctx, evt)
-            if(evt is IdleStateEvent){
-
-            }
-        }
     }
 }

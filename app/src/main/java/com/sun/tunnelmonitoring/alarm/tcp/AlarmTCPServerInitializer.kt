@@ -1,4 +1,5 @@
 import android.os.Environment
+import android.util.Log
 import com.sun.tunnelmonitoring.events.AlarmEvent
 import com.sun.tunnelmonitoring.events.MessageEvent
 import io.netty.buffer.ByteBuf
@@ -32,9 +33,9 @@ class AlarmTCPServerInitializer : ChannelInitializer<SocketChannel>() {
 
             val bytes=msg as ByteArray
             val message=bytes.toString(CharsetUtil.UTF_8)
-            println("接收数据完成，$message")
-
-            EventBus.getDefault().post(AlarmEvent(message))
+            println(">>>>>>>>>>>>>>>>>>")
+            Log.i("AlarmServer",message)
+            EventBus.getDefault().post(AlarmEvent("节点异常警报",message))
         }
     }
 
